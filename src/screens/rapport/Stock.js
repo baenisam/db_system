@@ -52,7 +52,7 @@ const Stock = ({route, navigation}) => {
   const [loading, setLoading] = React.useState(false);
   const [stock, setStock] = React.useState([]);
   const myData = [];
-  const getProducts = (value) => {
+  const getProducts = value => {
     setLoading(true);
 
     axios({
@@ -80,7 +80,7 @@ const Stock = ({route, navigation}) => {
   const COLORS = React.useContext(themeContext);
   const renderItem = ({item, index}) => {
     return (
-      <SkeletonPlaceholder borderRadius={4}>
+      <SkeletonPlaceholder backgroundColor={COLORS.skele} borderRadius={4}>
         <View style={{...styles.card_template}} />
       </SkeletonPlaceholder>
     );
@@ -221,11 +221,11 @@ const Stock = ({route, navigation}) => {
             style={{
               flex: 1,
             }}
-            contentContainerStyle={{paddingTop: 30, paddingBottom:30}}
+            contentContainerStyle={{paddingTop: 30, paddingBottom: 30}}
             showsVerticalScrollIndicator={false}>
             {loading ? (
               data.map(item => (
-                <SkeletonPlaceholder key={item.id} borderRadius={4}>
+                <SkeletonPlaceholder backgroundColor={COLORS.skele} key={item.id} borderRadius={4}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -258,7 +258,7 @@ const Stock = ({route, navigation}) => {
               stock.map(item => (
                 <TouchableOpacity
                   style={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     marginHorizontal: 10,
                     padding: 10,
                     backgroundColor: COLORS.touchable,
@@ -290,188 +290,47 @@ const Stock = ({route, navigation}) => {
                         source={{uri: config.IMAGE_URL + JSON.parse(item.file)}}
                       />
                     )}
-                    <View
-                      style={{
-                        marginLeft: 20,
-                        justifyContent: 'center',
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.txtblack,
-                          fontSize: 13,
-                        }}>
-                        {item.article.length < 15
-                          ? `${item.article}`
-                          : `${item.article.substring(0, 15)}...`}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Regular',
-                          color: COLORS.primary,
-                          fontSize: 10,
-                        }}>
-                        {item.categorie}
-                      </Text>
-                    </View>
                   </View>
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                  <View style={{
+                    flexDirection:'column'
+                  }}>
+                    <View style={{
+                       width:width - (width * .25) - 50,
+                      marginLeft:10
                     }}>
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          marginRight:10,
-                          fontSize: 12,
-                        }}>
-                        P.min:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.prix_min} $
-                      </Text>
+                      <Text style={{
+                        fontFamily:'Poppins-Bold',
+                        fontSize:16,
+                        color:COLORS.txtblack
+                      }}>{item.article}</Text>
+                      <Text style={{
+                        fontFamily:'Poppins-Light',
+                        fontSize:12,
+                        color:COLORS.txtblack,
+                        marginTop:-5
+                      }}>{item.categorie}</Text>
                     </View>
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          marginRight:10,
-                          fontSize: 12,
-                        }}>
-                        P.max:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.prix_max} $
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          fontSize: 12,
-                          marginRight:10
-                        }}>
-                        QE:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.qe}
-                      </Text>
-                    </View>
-                   
-                  </View>
-                  <View  style={{
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                    <View style={{
+                      flexDirection:'row',
+                      justifyContent:'space-between',
+                      alignItems:'center',
+                      width:width - (width * .25) - 60,
+                      marginLeft:10,
+                      marginTop:10
                     }}>
-                  <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          fontSize: 12,
-                          marginRight:10
-                        }}>
-                        QF:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.qf}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          fontSize: 12,
-                          marginRight:10
-                        }}>
-                        QI:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.qi}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        flexDirection:'row',
-                        justifyContent:'center'
-                      }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Light',
-                          color: COLORS.primary,
-                          fontSize: 12,
-                        }}>
-                        QS:
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Poppins-Bold',
-                          color: COLORS.primary,
-                          fontSize: 14,
-                        }}>
-                        {item.qs}
-                      </Text>
+                      <Text style={{
+                        fontFamily:'Poppins-Bold',
+                        fontSize:14,
+                        color:COLORS.txtblack
+                      }}>PRIX: {item.prix_max} {en.devise}</Text>
+                      <Text style={{
+                        fontFamily:'Poppins-Bold',
+                        fontSize:14,
+                        color:COLORS.txtblack
+                      }}>QTE: {item.qf}</Text>
                     </View>
                   </View>
+
                 </TouchableOpacity>
               ))
             ) : (
@@ -506,23 +365,22 @@ const Stock = ({route, navigation}) => {
           </ScrollView>
           <DatePicker
             modal
-            mode='date'
-            confirmText='Valider'
-            cancelText='Annuler'
+            mode="date"
+            confirmText="Valider"
+            cancelText="Annuler"
             title="Séléctionner une date"
-            locale='fr'
+            locale="fr"
             open={isDatePickerVisible}
             date={date}
             onConfirm={date => {
               setDatePickerVisibility(false);
               setDate(date);
-              handleConfirm(date)
+              handleConfirm(date);
             }}
             onCancel={() => {
               setDatePickerVisibility(false);
             }}
           />
-
         </View>
       </View>
     </View>
@@ -607,10 +465,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   card_image: {
-    width: width * 0.15,
-    height: width * 0.15,
+    width: width * 0.25,
+    height: width * 0.25,
     borderRadius: 5,
-    resizeMode: 'contain',
+    resizeMode:'stretch',
   },
   text_container: {
     position: 'absolute',

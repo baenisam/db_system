@@ -27,7 +27,7 @@ import moment from 'moment';
 const {width, height} = Dimensions.get('window');
 const ListUser = props => {
   const COLORS = React.useContext(themeContext);
-  const {en, token,getEntreprise, isLoading, allEntreprise} = React.useContext(GlobalContext);
+  const {en,refresh, token,getEntreprise, isLoading, allEntreprise} = React.useContext(GlobalContext);
   const [date, setDate] = React.useState(new Date());
   const maskRowHeight = Math.round((height - 200) / 20);
   const maskColWidth = (width - 200) / 2;
@@ -83,6 +83,7 @@ const ListUser = props => {
         console.log(response.data.data);
         setInvoices(response.data.data.users);
         setLoading(false);
+        
       })
       .catch(error => {
         if (error.response) {
@@ -105,7 +106,7 @@ const ListUser = props => {
 
   React.useEffect(() => {
     getProduts();
-  }, [en]);
+  }, [en,refresh]);
 
   const renderItem = ({item}) => {
     return (
@@ -244,7 +245,7 @@ const ListUser = props => {
             contentContainerStyle={{paddingHorizontal: 10}}
             keyExtractor={item => item.id}
             renderItem={item => (
-              <SkeletonPlaceholder borderRadius={4}>
+              <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
                 <View
                   style={{
                     width: '100%',

@@ -6,6 +6,7 @@ import {
   StatusBar,
   ScrollView,
   Dimensions,
+  RefreshControl,
   ImageBackground,
   Animated,
   Image,
@@ -29,9 +30,10 @@ import {useNavigation} from '@react-navigation/native';
 const {width, height} = Dimensions.get('window');
 const Home = () => {
   const COLORS = React.useContext(themeContext);
-  const {en, token} = React.useContext(GlobalContext);
+  const {en, token, refresh} = React.useContext(GlobalContext);
   const [loader, setLoading] = React.useState(false);
-  const [stats, setStats] = React.useState([]);
+  const [stats, setStats] = React.useState({});
+  const [invoices, setInvoices] = React.useState([]);
   const navigation = useNavigation();
   let AnimatedHeaderValue = new Animated.Value(0);
   const HeaderMaxheight = 350;
@@ -39,9 +41,9 @@ const Home = () => {
 
   //pie chart
   const widthAndHeight = 250;
-  const series = [123,300];
+  const series = [123, 300];
   const sliceColor = [COLORS.primary, 'red'];
-  console.log(series)
+  console.log(series);
 
   const animateHeaderheight = AnimatedHeaderValue.interpolate({
     inputRange: [0, HeaderMaxheight - headerMinheight],
@@ -49,31 +51,66 @@ const Home = () => {
     extrapolate: 'clamp',
   });
 
- 
-  const getProduts = (data) => {
+  const getProduts = async () => {
     setLoading(true);
-    axios({
-      url: config.BASE_URL + `operations/${en && en.id_entreprise}/load/${moment().format('YYYY-MM-DD')}`,
-      method: 'GET',
+    const one = await axios({
+      url: config.BASE_URL + `account/${en && en.id_entreprise}/dashboard`,
+      method: 'get',
       headers: {
         Authorization: 'Bearer ' + token,
       },
-    })
-      .then(response => {
-        setStats(response.data.data.total)
-        setLoading(false);
-        console.log(response.data.data);
-      })
+    });
+    const two = await axios({
+      url:
+        config.BASE_URL +
+        `facture/${en && en.id_entreprise}/load/${moment().format(
+          'YYYY-MM-DD',
+        )}/0`,
+      method: 'get',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    });
+    axios
+      .all([one, two])
+      .then(
+        axios.spread((...responses) => {
+          const responseOne = responses[0].data.data;
+          const responseTwo = responses[1].data.data.liste;
+          setStats(responseOne);
+          setInvoices(responseTwo);
+          setLoading(false);
+          // use/access the results
+        }),
+      )
       .catch(err => {
         console.log(err);
         setLoading(false);
       });
   };
 
-  React.useEffect(() => { 
-    getProduts()
-  }, [en])
-
+  React.useEffect(() => {
+    getProduts();
+  }, [en, refresh]);
+  const data = [
+    {id: 1},
+    {id: 2},
+    {id: 3},
+    {id: 4},
+    {id: 5},
+    {id: 6},
+    {id: 7},
+    {id: 8},
+    {id: 9},
+    {id: 10},
+    {id: 11},
+    {id: 12},
+    {id: 13},
+    {id: 14},
+    {id: 15},
+    {id: 16},
+    {id: 17},
+  ];
   return (
     <View style={{backgroundColor: COLORS.background, ...styles.layout}}>
       <StatusBar
@@ -87,7 +124,6 @@ const Home = () => {
           style={{
             width: width,
             height: height,
-            zIndex: 1,
             opacity: 0.1,
             ...StyleSheet.absoluteFill,
           }}
@@ -123,7 +159,7 @@ const Home = () => {
                 color={COLORS.primary}
               />
             </TouchableOpacity>
-         
+
             <TouchableOpacity
               style={{
                 backgroundColor: '#fff',
@@ -146,13 +182,18 @@ const Home = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <ScrollView contentContainerStyle={{flex:1}} showsVerticalScrollIndicator={false} style={{flex: 1, zIndex: 100}}>
+        <ScrollView
+        contentContainerStyle={{flex:1, zIndex:300}}
+          refreshControl={<RefreshControl onRefresh={() => getProduts()} refreshing={loader} />}
+          showsVerticalScrollIndicator={false}
+          style={{zIndex: 200}}>
           <View
             style={{
               paddingHorizontal: 20,
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: 30,
+              marginTop: 20,
+              marginBottom: 20,
             }}>
             <View
               style={{
@@ -180,105 +221,320 @@ const Home = () => {
           </View>
           <View
             style={{
-              flexDirection: 'row',
-              paddingHorizontal: 20,
-              justifyContent: 'space-around',
-              marginTop: 40,
-            }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate(ROUTES.PRODUCT_LIST)}
-              style={styles.item}>
-              <View style={styles.content}>
-                <Image
-                  source={imgs.prod}
-                  style={{tintColor: COLORS.primary, ...styles.contentImage}}
-                />
-              </View>
-              <Text style={{color: COLORS.white, ...styles.itemText}}>
-                Produits
-              </Text>
-            </TouchableOpacity>
-            <View style={{width: 20}} />
-            <TouchableOpacity
-              onPress={() => navigation.navigate(ROUTES.STOCK)}
-              style={styles.item}>
-              <View style={styles.content}>
-                <Image
-                  source={imgs.stock}
-                  style={{tintColor: COLORS.primary, ...styles.contentImage}}
-                />
-              </View>
-              <Text style={{color: COLORS.white, ...styles.itemText}}>
-                Stock
-              </Text>
-            </TouchableOpacity>
-            <View style={{width: 20}} />
-            <TouchableOpacity
-              onPress={() => navigation.navigate(ROUTES.RAPPORTS)}
-              style={styles.item}>
-              <View style={styles.content}>
-                <Image
-                  source={imgs.report}
-                  style={{tintColor: COLORS.primary, ...styles.contentImage}}
-                />
-              </View>
-              <Text style={{color: COLORS.white, ...styles.itemText}}>
-                Rapports
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
               backgroundColor: COLORS.background,
               flex: 1,
-              marginTop:20,
-              borderTopLeftRadius: 30,
+              paddingTop: 0,
+              zIndex:200,
+              marginTop: 20,
               borderTopRightRadius: 30,
-              justifyContent:'center',
-              alignItems:'center'
             }}>
-              {loader ?
-           <SkeletonPlaceholder>
-            <View style={{
-              width:width * .7,
-              height:width * .7,
-              borderRadius:width * .7,
-            }}/>
-           </SkeletonPlaceholder>
-           :
-           <PieChart
-            widthAndHeight={width * .7}
-            series={series}
-            sliceColor={sliceColor}
-            doughnut={true}
-            coverRadius={0.5}
-            coverFill={COLORS.background}
-          />}
-          <View style={{
-            flexDirection:'row',
-            justifyContent:'space-around',
-            alignItems: 'center',
-            marginTop:20
-          }}>
-            {stats.map(item => (
-            <View style={{
-                backgroundColor:item.type == 'ENTREE' ? COLORS.primary : 'red',
-                paddingHorizontal:20,
-                marginLeft:item.type == 'SORTIE' ? 20 : 0,
-                paddingVertical:5,
-                justifyContent:'center',
-                alignItems:'center',
-                borderRadius:30
-            }}>
-              <Text style={{
-                fontFamily:'Poppins-Regular',
-                fontSize:10,
-                color:COLORS.white
-              }}>{item.type}</Text>
-            </View>
-            ))}
-    
-          </View>
+            {loader ? (
+              <View style={{flex:1}}>
+                <SkeletonPlaceholder backgroundColor={COLORS.skele}  borderRadius={4}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 10,
+                      justifyContent: 'space-between',
+                      marginTop: 20,
+                      marginBottom: 30,
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        alignItems: 'center',
+                        padding: 10,
+                        width: (width - 80) / 3,
+                        height: (width - 80) / 4,
+                        borderRadius: 10,
+                      }}
+                    />
+                    <TouchableOpacity
+                      style={{
+                        alignItems: 'center',
+                        padding: 10,
+                        width: (width - 80) / 3,
+                        height: (width - 80) / 4,
+                        borderRadius: 10,
+                      }}
+                    />
+                    <TouchableOpacity
+                      style={{
+                        alignItems: 'center',
+                        padding: 10,
+                        width: (width - 80) / 3,
+                        height: (width - 80) / 4,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      paddingHorizontal: 10,
+                      marginTop: 10,
+                      marginBottom: 10,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Light',
+                        fontSize: 14,
+                        color: COLORS.txtblack,
+                      }}>
+                      Factures recentes
+                    </Text>
+                  </View>
+               
+                <View
+                  style={{
+                    paddingHorizontal: 10,
+                  }}>
+                  {data.map(item => (
+                   
+                      <View
+                        style={{
+                          width: '100%',
+                          height: 70,
+                          marginVertical: 5,
+                          borderRadius: 5,
+                        }}
+                      />
+           
+                  ))}
+                </View>
+                </SkeletonPlaceholder>
+              </View>
+            ) : (
+              <View style={{}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    paddingHorizontal: 10,
+                    justifyContent: 'space-between',
+                    marginTop: 20,
+                    marginBottom: 30,
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate(ROUTES.PRODUCT_LIST)}
+                    style={{
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.22,
+                      shadowRadius: 2.22,
+
+                      elevation: 3,
+                      backgroundColor: COLORS.touchable,
+                      ...styles.content,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 30,
+                        color: COLORS.primary,
+                      }}>
+                      {stats && stats.count_produit}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: 10,
+                        color: COLORS.primary,
+                        marginTop: -10,
+                      }}>
+                      Produits
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={{width: 20}} />
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate(ROUTES.USER_LIST)}
+                    style={{
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.22,
+                      shadowRadius: 2.22,
+
+                      elevation: 3,
+                      backgroundColor: COLORS.touchable,
+                      ...styles.content,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 30,
+                        color: COLORS.primary,
+                      }}>
+                      {stats && stats.count_identification}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: 10,
+                        color: COLORS.primary,
+                        marginTop: -10,
+                      }}>
+                      Utilisateurs
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={{width: 20}} />
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate(ROUTES.OPERATIONS)}
+                    style={{
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.22,
+                      shadowRadius: 2.22,
+
+                      elevation: 3,
+                      backgroundColor: COLORS.touchable,
+                      ...styles.content,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 30,
+                        color: COLORS.primary,
+                      }}>
+                      {stats && stats.count_operations}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: 10,
+                        color: COLORS.primary,
+                        marginTop: -10,
+                      }}>
+                      Opérations
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    paddingHorizontal: 10,
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Light',
+                      fontSize: 14,
+                      color: COLORS.txtblack,
+                    }}>
+                    Factures recentes
+                  </Text>
+                </View>
+                {invoices.length > 0 ? (
+                  invoices.map(item => (
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate(ROUTES.INVOICE_DETAILS, {
+                          item: item,
+                        })
+                      }
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginHorizontal: 10,
+                        padding: 10,
+                        backgroundColor: COLORS.touchable,
+                        marginVertical: 5,
+                        borderRadius: 5,
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 1,
+                        },
+                        shadowOpacity: 0.22,
+                        shadowRadius: 2.22,
+
+                        elevation: 3,
+                      }}>
+                      <View>
+                        <Text
+                          style={{
+                            fontFamily: 'Poppins-Bold',
+                            fontSize: 16,
+                            color: COLORS.txtblack,
+                          }}>
+                          {item.client}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: 'Poppins-Light',
+                            color: 'gray',
+                            fontSize: 12,
+                          }}>
+                          {moment(item.createdAt).format('DD MMMM YYYY')}
+                        </Text>
+                      </View>
+                      <View style={{alignItems: 'flex-end'}}>
+                        <Text
+                          style={{
+                            fontFamily: 'Poppins-Bold',
+                            fontSize: 16,
+                            color: COLORS.txtblack,
+                          }}>
+                          {item.montant} {en && en.devise}
+                        </Text>
+                        <View
+                          style={{
+                            paddingVertical: 5,
+                            paddingHorizontal: 10,
+                            borderRadius: 20,
+                            backgroundColor:
+                              item.etat == 0 ? 'orange' : 'green',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}>
+                          <Text
+                            style={{
+                              fontFamily: 'Poppins-Light',
+                              fontSize: 8,
+                              color: COLORS.white,
+                            }}>
+                            {item.etat == 0 ? 'En attente' : 'Confirmée'}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      marginTop: 0,
+                      paddingHorizontal: 20,
+                      flex: 1,
+                      height:height
+                    }}>
+                    <Image
+                      source={imgs.empty}
+                      style={{
+                        width: 300,
+                        height: 300,
+                        tintColor: COLORS.primary,
+                        resizeMode: 'contain',
+                      }}
+                    />
+
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Light',
+                        fontSize: 10,
+                        color: COLORS.txtblack,
+                      }}>
+                      Aucune facture
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -293,12 +549,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    backgroundColor: '#fff',
     justifyContent: 'center',
+    borderRightWidth: 5,
+    borderRightColor: 'orange',
     alignItems: 'center',
-    width: (width - 80) / 4,
+    padding: 10,
+    width: (width - 80) / 3,
     height: (width - 80) / 4,
-    borderRadius: (width - 80) / 4,
+    borderRadius: 10,
   },
   contentImage: {
     width: (width - 80) / 6,

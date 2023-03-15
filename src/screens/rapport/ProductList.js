@@ -63,7 +63,7 @@ const ProductList = ({route, navigation}) => {
   const COLORS = React.useContext(themeContext);
   const renderItem = ({item, index}) => {
     return (
-      <SkeletonPlaceholder borderRadius={4}>
+      <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
         <View style={{...styles.card_template}} />
       </SkeletonPlaceholder>
     );
@@ -162,7 +162,7 @@ const ProductList = ({route, navigation}) => {
             showsVerticalScrollIndicator={false}>
             {loading ? (
               data.map(item => (
-                <SkeletonPlaceholder borderRadius={4}>
+                <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
                   <View
                     style={{
                       flexDirection: 'row',

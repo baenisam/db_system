@@ -91,18 +91,18 @@ function BottomTabs() {
 
           return (
             <View style={styles.button}>
-              {route.name == ROUTES.INVOICES ?(
+              {route.name == ROUTES.INVOICES ? (
                 <Icons.FontAwesome5 name={iconName} size={22} color={color} />
               ) : (
                 <Icons.FontAwesome name={iconName} size={22} color={color} />
               )}
-  
+
               <Text style={{color: color, ...styles.title}}>{title}</Text>
             </View>
           );
         },
       })}>
-      {en && en.fonction  == 'Default User' ? (
+      {en && en.fonction == 'Default User' ? (
         <>
           <Tab.Screen name={ROUTES.NOTIFICATIONS} component={Notifications} />
           <Tab.Screen name={ROUTES.INVOICES} component={Invoices} />
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   tabBarStyle: {
     height: 60,
     borderTopWidth: 0,
+
   },
   iconText: {
     fontSize: 8,

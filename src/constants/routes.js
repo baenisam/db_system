@@ -29,6 +29,7 @@ export default {
   HOME_TAB: 'Home Tab',
   HOME_DRAWER: 'Home Drawer',
   LIST_ENTREPRISE:'List Entreprise',
+  EDIT_ENTREPRISE:'Edit Entreprise',
 
   CART: 'Cart',
   CART_NAVIGATOR: 'Cart Navigator',

@@ -287,7 +287,7 @@ const Operations = props => {
             contentContainerStyle={{paddingHorizontal: 10, paddingTop: 30}}
             keyExtractor={item => item.id}
             renderItem={item => (
-              <SkeletonPlaceholder borderRadius={4}>
+              <SkeletonPlaceholder direction="right" backgroundColor={COLORS.skele} borderRadius={4}>
                 <View
                   style={{
                     width: '100%',

@@ -23,6 +23,7 @@ export const GlobalProvider = ({children}) => {
   const [en, setEn] = React.useState(null);
   const [categories, setCategories] = React.useState([]);
   const [splashloading, setSplashLoading] = React.useState(false);
+  const [refresh, forceUpdate] = React.useReducer(x => x + 1, 0);
 
   const displayMessage = (title, description, type) => {
     showMessage({
@@ -157,9 +158,86 @@ export const GlobalProvider = ({children}) => {
             clearTimeout(timeout);
 
             if (response.data.status === 200) {
+              forceUpdate();
               setIsLoading(false);
               setInputs({})
               displayMessage('Success', response.data.message, 'success');
+              navigation.goBack()
+            } else {
+              setIsLoading(false);
+              console.log(response.data.message);
+              displayMessage('Erreur', response.data.message, 'danger');
+            }
+          })
+          .catch(error => {
+            if (error.response) {
+              console.log(error.response.data.message);
+              displayMessage('Erreur', error.response.data.message, 'danger');
+              setIsLoading(false);
+            } else if (error.request) {
+              console.log(error.request.message);
+              setIsLoading(false);
+              displayMessage('Erreur', error.request.message, 'danger');
+            } else if (error.code === 'ERR_CANCELED') {
+              setIsLoading(false);
+              displayMessage(
+                'Erreur',
+                "Votre connexion internet n'est pas bonne",
+                'danger',
+              );
+              console.log(error.code);
+            } else {
+              console.log('Error', error.message.message);
+              //setError(error.message.message);
+              setIsLoading(false);
+            }
+          });
+      } else {
+        displayMessage(
+          'Erreur de connexion',
+          "Votre téléphone n'est pas connecté à l'internet",
+          'danger',
+        );
+      }
+    });
+  };
+
+  const UpdateEntreprise = (inputs, id) => {
+    NetInfo.fetch().then(state => {
+      if (state.isConnected) {
+        let source = axios.CancelToken.source();
+        const timeout = setTimeout(() => {
+          source.cancel();
+        }, 50000);
+        setIsLoading(true);
+        axios({
+          url: config.BASE_URL + `entreprise/${id}/update`,
+          method: 'PUT',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            Accept: 'application/json'
+          },
+          data: {
+            name: inputs.name,
+            adresse: inputs.adresse,
+            id_categorie: inputs.category,
+            description: inputs.description,
+            email: inputs.email,
+            idnat: inputs.id,
+            rccm: inputs.rccm,
+            tel: inputs.phone,
+            message_name: inputs.sender,
+          },
+          cancelToken: source.token,
+        })
+          .then(response => {
+            clearTimeout(timeout);
+
+            if (response.data.status === 200) {
+              forceUpdate();
+              setIsLoading(false);
+              displayMessage('Success', response.data.message, 'success');
+              navigation.goBack()
             } else {
               setIsLoading(false);
               console.log(response.data.message);
@@ -234,9 +312,11 @@ export const GlobalProvider = ({children}) => {
             clearTimeout(timeout);
 
             if (response.data.status === 200) {
+              forceUpdate();
               setIsLoading(false);
               setInputs({})
               displayMessage('Success', response.data.message, 'success');
+              navigation.goBack()
             } else {
               setIsLoading(false);
               console.log(response.data.message);
@@ -474,6 +554,7 @@ export const GlobalProvider = ({children}) => {
         setToken(token);
         setEn(entreprise);
         setAllentprise(userData.entreprises);
+       
 
         //console.log(token)
       }
@@ -504,7 +585,7 @@ export const GlobalProvider = ({children}) => {
     IsLoggedin();
   }, []);
 
-  const getCategory = value => {
+  const getCategory = () => {
     axios({
       url: config.BASE_URL + `entreprise/categorie/load`,
       method: 'GET',
@@ -550,7 +631,7 @@ export const GlobalProvider = ({children}) => {
   };
   React.useEffect(() => {
     getEntreprise()
-  }, [])
+  }, [refresh])
 
   React.useEffect(() => {
     getCategory();
@@ -575,6 +656,7 @@ export const GlobalProvider = ({children}) => {
         hideModal,
         displayMessage,
         LoginAccount,
+        getCategory,
         userData,
         Logout,
         en,
@@ -585,7 +667,10 @@ export const GlobalProvider = ({children}) => {
         CreateUser,
         allEntreprise,
         categories,
+        UpdateEntreprise,
         LogoutSession,
+        refresh,
+        forceUpdate,
         CreateEntreprise
       }}>
       {children}

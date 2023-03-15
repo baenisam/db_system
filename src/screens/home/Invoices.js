@@ -289,7 +289,7 @@ const Invoices = props => {
             contentContainerStyle={{paddingHorizontal: 10}}
             keyExtractor={item => item.id}
             renderItem={item => (
-              <SkeletonPlaceholder borderRadius={4}>
+              <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
                 <View
                   style={{
                     width: '100%',

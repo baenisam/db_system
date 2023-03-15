@@ -54,7 +54,7 @@ const Cart = props => {
   const cart = useSelector(state => state.cart);
   const totalPrice = useSelector(cartTotalPriceSelector);
   const COLORS = React.useContext(themeContext);
-  const {displayMessage, en, token} = React.useContext(GlobalContext);
+  const {displayMessage,forceUpdate, en, token} = React.useContext(GlobalContext);
 
   console.log(cart)
 
@@ -131,7 +131,7 @@ const Cart = props => {
         }, 50000);
         setLoad(true);
         axios({
-          url: `https://apis.mlinzitech.com/v1/api/facture/${
+          url:config.BASE_URL + `facture/${
             en && en.id_entreprise
           }/create`,
           method: 'post',
@@ -176,6 +176,7 @@ const Cart = props => {
 
               Promise.all(promises)
                 .then(response => {
+                  forceUpdate();
                   clearTimeout(timeout);
                   setLoad(false);
                   displayMessage(
@@ -186,6 +187,7 @@ const Cart = props => {
                   showModalPartial(false);
                   setInputs({});
                   dispatch(clear());
+
                 })
                 .catch(error => {
                   console.log(error);

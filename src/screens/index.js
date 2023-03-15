@@ -30,7 +30,7 @@ export {default as ListUser} from './home/ListUser';
 //entreprise
 export {default as AddEntreprise} from './home/AddEntreprise';
 export {default as ListEntreprise} from './home/ListEntreprise';
-
+export {default as EditEntreprise} from './home/EditEntreprise';
 //rapport 
 export {default as Operations} from './home/Operations';
 export {default as Achat} from './rapport/Achat';

@@ -15,6 +15,7 @@ import {
   OnBoarding,
   QrScan,
   AddEntreprise,
+  EditEntreprise,
   ChooseEnt,
   Stock,
   ProductList,
@@ -206,6 +207,11 @@ function AuthNavigator() {
                 options={{...MyTransition}}
                 name={ROUTES.USER_LIST}
                 component={ListUser}
+              />
+                  <Stack.Screen
+                options={{...AutherTransition}}
+                name={ROUTES.EDIT_ENTREPRISE}
+                component={EditEntreprise}
               />
             </>
           )}

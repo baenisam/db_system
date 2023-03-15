@@ -26,13 +26,13 @@ import {useNavigation} from '@react-navigation/native';
 import imgs from '../../constants/imgs';
 import DialogBox from '../../components/DialogBox';
 const {width, height} = Dimensions.get('window');
-const AddEntreprise = props => {
+const EditEntreprise = ({route, navigation}) => {
   const COLORS = React.useContext(themeContext);
-  const {navigation} = props;
   const {
     userData,
     ShoosedEntreprise,
     CreateEntreprise,
+    UpdateEntreprise,
     categories,
     allEntreprise,
     en,
@@ -41,21 +41,27 @@ const AddEntreprise = props => {
     isLoading,
   } = React.useContext(GlobalContext);
   const [modal, showModal] = React.useState(false);
+const {item} = route.params;
+
+console.log(item)
+
+
+
 
 
   React.useEffect(() => {
     getCategory()
-  }, [categories, en])
+  }, [])
   const [inputs, setInputs] = React.useState({
-    name: '',
-    description: '',
-    category: '',
-    phone: '',
-    adresse: '',
-    email: '',
-    id: '',
-    rccm: '',
-    sender: '',
+    name: item.nom_entreprise,
+    description: item.descripton,
+    category: item.id_categorie,
+    phone: item.tel,
+    adresse: item.adresse,
+    email: item.email,
+    id: item.idnat,
+    rccm: item.rccm,
+    sender: item.message_name,
   });
   const [errors, setErrors] = React.useState({});
   const validate = () => {
@@ -99,7 +105,7 @@ const AddEntreprise = props => {
       valide = false;
     }
     if (valide) {
-      CreateEntreprise(inputs, setInputs);
+      UpdateEntreprise(inputs, item.id_entreprise);
     }
   };
 
@@ -153,7 +159,7 @@ const AddEntreprise = props => {
       />
 
 
-<View
+      <View
         style={{
           paddingHorizontal: 10,
           paddingBottom:20,
@@ -170,7 +176,7 @@ const AddEntreprise = props => {
             />
           </TouchableOpacity>
         </View>
-          <Text style={{marginLeft:20, ...styles.desc}}>Créer une entreprise</Text>
+          <Text style={{marginLeft:20, ...styles.desc}}>Modifier une entreprise</Text>
 
       </View>
       <View
@@ -382,7 +388,7 @@ const AddEntreprise = props => {
   );
 };
 
-export default AddEntreprise;
+export default EditEntreprise;
 
 const styles = StyleSheet.create({
   main: {

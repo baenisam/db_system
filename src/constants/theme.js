@@ -26,11 +26,13 @@ const theme = {
         tabBtnTxt:'#fff',
         txtWhite:'#fff',
         inputBg:'#f0f7fa',
+        skele:'#E1E9EE'
     },
     dark:{
         theme:'dark',
         calendar:'#35597B',
         primary: "#35597B",
+        skele:'rgba(53, 89, 123,.5)',
         headerWhite:'#040917',
         txtWhite:'rgba(255,255,255,0.6)',
         activity:'#fff',

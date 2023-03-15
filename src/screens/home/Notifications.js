@@ -113,7 +113,7 @@ const Notifications = ({navigation}) => {
 
   const renderItem = ({item, index}) => {
     return (
-      <SkeletonPlaceholder borderRadius={4}>
+      <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
         <View style={{...styles.card_template}} />
       </SkeletonPlaceholder>
     );

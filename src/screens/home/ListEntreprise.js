@@ -131,6 +131,7 @@ const ListEntreprise = props => {
         </View>
         <View style={{alignItems: 'center'}}>
           {item.fonction == 'Super Admin' && <TouchableOpacity
+          onPress={() => navigation.navigate(ROUTES.EDIT_ENTREPRISE, {item:item})}
             style={{
               padding: 10,
               borderRadius:5,
@@ -204,22 +205,22 @@ const ListEntreprise = props => {
         }}>
         {isLoading ? (
           <FlatList
-            style={{flex: 1}}
-            data={data}
-            contentContainerStyle={{paddingHorizontal: 10}}
-            keyExtractor={item => item.id}
-            renderItem={item => (
-              <SkeletonPlaceholder borderRadius={4}>
-                <View
-                  style={{
-                    width: '100%',
-                    height: 70,
-                    marginVertical: 5,
-                    borderRadius: 5,
-                  }}
-                />
-              </SkeletonPlaceholder>
-            )}
+          style={{flex: 1}}
+          data={data}
+          contentContainerStyle={{paddingHorizontal: 10}}
+          keyExtractor={item => item.id}
+          renderItem={item => (
+            <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
+              <View
+                style={{
+                  width: '100%',
+                  height: 70,
+                  marginVertical: 5,
+                  borderRadius: 5,
+                }}
+              />
+            </SkeletonPlaceholder>
+          )}
             showsVerticalScrollIndicator={false}
           />
         ) : (

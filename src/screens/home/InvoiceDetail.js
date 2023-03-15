@@ -130,13 +130,13 @@ const InvoiceDetail = () => {
             flex:1,
             backgroundColor:COLORS.background
           }}>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{
                 width:width,
                 height:height /3
               }}/>
              </SkeletonPlaceholder>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="right" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{flexDirection:'row',justifyContent:'space-between', marginTop:20, paddingHorizontal:10}}>
                 <View>
                 <View style={{width:width/2, height:25}}/>
@@ -145,7 +145,7 @@ const InvoiceDetail = () => {
                 <View style={{width:width/6, height:30}}/>
               </View>
              </SkeletonPlaceholder>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{flexDirection:'row',justifyContent:'space-between', marginTop:20, paddingHorizontal:10}}>
                 <View>
                 <View style={{width:width/2, height:25}}/>
@@ -154,7 +154,7 @@ const InvoiceDetail = () => {
                 <View style={{width:width/6, height:30}}/>
               </View>
              </SkeletonPlaceholder>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="right" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{flexDirection:'row',justifyContent:'space-between', marginTop:20, paddingHorizontal:10}}>
                 <View>
                 <View style={{width:width/2, height:25}}/>
@@ -163,7 +163,7 @@ const InvoiceDetail = () => {
                 <View style={{width:width/6, height:30}}/>
               </View>
              </SkeletonPlaceholder>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{flexDirection:'row',justifyContent:'space-between', marginTop:20, paddingHorizontal:10}}>
                 <View>
                 <View style={{width:width/2, height:25}}/>
@@ -172,7 +172,7 @@ const InvoiceDetail = () => {
                 <View style={{width:width/6, height:30}}/>
               </View>
              </SkeletonPlaceholder>
-             <SkeletonPlaceholder borderRadius={4}>
+             <SkeletonPlaceholder direction="right" backgroundColor={COLORS.skele} borderRadius={4}>
               <View style={{flexDirection:'row',justifyContent:'space-between', marginTop:20, paddingHorizontal:10}}>
                 <View>
                 <View style={{width:width/2, height:25}}/>
