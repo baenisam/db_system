@@ -182,7 +182,7 @@ const Home = () => {
           </View>
         </View>
         <ScrollView
-        contentContainerStyle={{flex:1, zIndex:300}}
+        contentContainerStyle={{flexGrow:1, zIndex:300}}
           refreshControl={<RefreshControl onRefresh={() => getProduts()} refreshing={loader} />}
           showsVerticalScrollIndicator={false}
           style={{zIndex: 200}}>
