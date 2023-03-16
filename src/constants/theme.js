@@ -26,12 +26,15 @@ const theme = {
         tabBtnTxt:'#fff',
         txtWhite:'#fff',
         inputBg:'#f0f7fa',
-        skele:'#E1E9EE'
+        skele:'#E1E9EE',
+        dash:'#35597B',
+
     },
     dark:{
         theme:'dark',
         calendar:'#35597B',
         primary: "#35597B",
+        dash:'rgba(255,255,255,.7)',
         skele:'rgba(53, 89, 123,.5)',
         headerWhite:'#040917',
         txtWhite:'rgba(255,255,255,0.6)',

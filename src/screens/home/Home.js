@@ -323,7 +323,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Bold',
                         fontSize: 30,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                       }}>
                       {stats && stats.count_produit}
                     </Text>
@@ -331,7 +331,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: 10,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                         marginTop: -10,
                       }}>
                       Produits
@@ -357,7 +357,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Bold',
                         fontSize: 30,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                       }}>
                       {stats && stats.count_identification}
                     </Text>
@@ -365,7 +365,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: 10,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                         marginTop: -10,
                       }}>
                       Utilisateurs
@@ -391,7 +391,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Bold',
                         fontSize: 30,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                       }}>
                       {stats && stats.count_operations}
                     </Text>
@@ -399,7 +399,7 @@ const Home = () => {
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: 10,
-                        color: COLORS.primary,
+                        color: COLORS.dash,
                         marginTop: -10,
                       }}>
                       Opérations
