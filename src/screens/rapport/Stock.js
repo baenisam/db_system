@@ -16,6 +16,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {Table, TableWrapper, Row} from 'react-native-table-component';
 import imgs from '../../constants/imgs';
 import * as config from '../../services/config';
+import { ROUTES } from '../../constants';
 import {data} from '../../constants/DummyData';
 import themeContext from '../../constants/themeContext';
 import {DataTable} from 'react-native-paper';
@@ -229,11 +230,13 @@ const Stock = ({route, navigation}) => {
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginVertical: 5,
                       marginHorizontal: 10,
+                      padding: 10,
+                      marginVertical: 5,
+                      borderRadius: 5,
                     }}>
                     <View
-                      style={{width: 70, height: 70, borderBottomColor: 5}}
+                      style={{width: 100, height: 100, borderBottomColor: 5}}
                     />
                     <View style={{flex: 1, marginLeft: 10}}>
                       <View
@@ -250,6 +253,28 @@ const Stock = ({route, navigation}) => {
                           borderBottomColor: 5,
                         }}
                       />
+                     <View style={{
+                      flexDirection:'row',
+                      justifyContent:'space-between',
+                      alignItems:'center'
+                     }}>
+                       <View
+                        style={{
+                          height: 20,
+                          width: width / 5,
+                          borderBottomColor: 5,
+                          marginTop:10
+                        }}
+                      />
+                       <View
+                        style={{
+                          height: 20,
+                          width: width / 5,
+                          borderBottomColor: 5,
+                          marginTop:10
+                        }}
+                      />
+                     </View>
                     </View>
                   </View>
                 </SkeletonPlaceholder>
@@ -257,15 +282,14 @@ const Stock = ({route, navigation}) => {
             ) : stock.length > 0 ? (
               stock.map(item => (
                 <TouchableOpacity
+                onPress={() => navigation.navigate(ROUTES.STOCK_DETAIL, {item:item})}
                   style={{
                     flexDirection: 'row',
                     marginHorizontal: 10,
                     padding: 10,
                     backgroundColor: COLORS.touchable,
                     marginVertical: 5,
-                    borderRadius: 10,
-                    borderLeftWidth: 7,
-                    borderLeftColor: COLORS.primary,
+                    borderRadius: 5,
                     shadowColor: '#000',
                     shadowOffset: {
                       width: 0,

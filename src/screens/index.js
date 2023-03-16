@@ -41,3 +41,4 @@ export {default as ProductList} from './rapport/ProductList';
 export {default as Depenses} from './rapport/Depenses';
 export {default as InvoiceDetail} from './home/InvoiceDetail';
 export {default as OperationDetail} from './home/OperationDetail';
+export {default as StockDetail} from './rapport/StockDetail';

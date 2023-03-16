@@ -273,7 +273,7 @@ const CustomDrawer = props => {
             fontSize: 10,
             marginTop: 10,
           }}>
-          Eazy Book version 1.0.0
+          Db System version 1.0.0
         </Text>
       </View>
       <DialogBox

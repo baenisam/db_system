@@ -188,25 +188,26 @@ const Notifications = ({navigation}) => {
         translucent={true}
         backgroundColor={'transparent'}
       />
-   
+      <Image
+          source={imgs.bg}
+          style={{
+            width: width,
+            height: '100%',
+            zIndex: 1,
+            opacity: 0.02,
+            ...StyleSheet.absoluteFill,
+          }}
+        />
       <View
         style={{
           paddingTop:
             Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 0,
           backgroundColor: COLORS.shape,
+          
           zIndex:100,
           ...styles.header,
         }}>
-              <Image
-          source={imgs.bg}
-          style={{
-            width: width,
-            //height: '100%',
-            zIndex: 1,
-            opacity: 0.1,
-            ...StyleSheet.absoluteFill,
-          }}
-        />
+           
          
         <View
           style={{
@@ -269,6 +270,7 @@ const Notifications = ({navigation}) => {
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             marginTop: 10,
+            paddingBottom:10,
           }}>
           <SearchBar
             color={COLORS.txtblack}
@@ -292,7 +294,7 @@ const Notifications = ({navigation}) => {
         />
       </Animated.View>*/}
       <View style={{paddingHorizontal: 10,zIndex:100, flex: 1, marginTop: 0}}>
-        <Text style={{color: COLORS.txtblack, ...styles.cate}}>Produits</Text>
+        <Text style={{color: COLORS.txtblack,marginTop:10, ...styles.cate}}>Produits</Text>
         {loading ? (
           <FlatList
             //ItemSeparatorComponent={() => (<View style={{width:10}}/>)}

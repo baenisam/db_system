@@ -145,7 +145,6 @@ const Home = () => {
             <TouchableOpacity
               onPress={() => navigation.openDrawer()}
               style={{
-                backgroundColor: '#fff',
                 padding: 5,
                 borderRadius: 50,
                 justifyContent: 'center',
@@ -156,7 +155,7 @@ const Home = () => {
               <Icons.SimpleLineIcons
                 name="menu"
                 size={15}
-                color={COLORS.primary}
+                color={COLORS.white}
               />
             </TouchableOpacity>
 
@@ -173,8 +172,8 @@ const Home = () => {
               <Image
                 source={imgs.avatar}
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 25,
+                  height: 25,
                   borderRadius: 50,
                   resizeMode: 'contain',
                 }}
@@ -273,14 +272,7 @@ const Home = () => {
                       marginTop: 10,
                       marginBottom: 10,
                     }}>
-                    <Text
-                      style={{
-                        fontFamily: 'Poppins-Light',
-                        fontSize: 14,
-                        color: COLORS.txtblack,
-                      }}>
-                      Factures recentes
-                    </Text>
+                    <View style={{width:'40%', height:20}}/>
                   </View>
                
                 <View

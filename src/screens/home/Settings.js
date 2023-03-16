@@ -18,11 +18,11 @@ import {
   MenuProvider,
   MenuOptions,
   MenuTrigger,
- } from "react-native-popup-menu";
+} from 'react-native-popup-menu';
 import langContext from '../../constants/langContext';
 import DialogBox from '../../components/DialogBox';
 import {GlobalContext} from '../../services/context';
-import { ROUTES } from '../../constants';
+import {ROUTES} from '../../constants';
 import Loader from './Loader';
 import {Icons} from '../../constants/Icons';
 import ToggleSwitch from 'toggle-switch-react-native';
@@ -35,12 +35,19 @@ const Settings = () => {
   const COLORS = React.useContext(themeContext);
   const tr = React.useContext(langContext);
   const navigation = useNavigation();
-  const {mode,lg, toogleTheme,toogleLanguage,toogleSound,sound,Logout, isLoading} = React.useContext(GlobalContext);
+  const {
+    mode,
+    lg,
+    toogleTheme,
+    toogleLanguage,
+    toogleSound,
+    sound,
+    Logout,
+    isLoading,
+  } = React.useContext(GlobalContext);
 
-  const [modalLg, showModalLg] = React.useState(false)
-  const [modal, showModal] = React.useState(false)
-
-
+  const [modalLg, showModalLg] = React.useState(false);
+  const [modal, showModal] = React.useState(false);
 
   const langue = [
     {
@@ -62,22 +69,22 @@ const Settings = () => {
       <TouchableOpacity
         onPress={() => {
           toogleLanguage(item.lg);
-          showModalLg(false)
+          showModalLg(false);
         }}
         style={{
-          borderBottomColor:COLORS.txtblack,
+          borderBottomColor: COLORS.txtblack,
           ...styles.lg,
         }}>
         <Text
           style={{
-            color:COLORS.txtblack,
+            color: COLORS.txtblack,
             ...styles.lg1,
           }}>
           {item.name}
         </Text>
         <Text
           style={{
-            color:COLORS.txtblack,
+            color: COLORS.txtblack,
             ...styles.lg2,
           }}>
           {item.lg}
@@ -97,69 +104,77 @@ const Settings = () => {
         translucent={true}
         backgroundColor={'transparent'}
       />
-    <Loader visible={isLoading} label="Déconnexion..." color={COLORS.touchable} colorText={COLORS.txtblack} />
+      <Loader
+        visible={isLoading}
+        label="Déconnexion..."
+        color={COLORS.touchable}
+        colorText={COLORS.txtblack}
+      />
       <View
         style={{
           paddingTop:
             Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 0,
-          height: 90,
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20,
-          backgroundColor: COLORS.headerWhite,
           paddingHorizontal: 20,
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-            <TouchableOpacity style={{
-          width:35,
-          height:35,
-          justifyContent:'center',
-          alignItems:'center',
-          borderRadius:10
-        }} onPress={() => navigation.goBack()}>
-          <Icons.FontAwesome name="arrow-left" color={COLORS.primary} size={20} />
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 10,
+          }}
+          onPress={() => navigation.goBack()}>
+          <Icons.FontAwesome
+            name="arrow-left"
+            color={COLORS.primary}
+            size={15}
+          />
         </TouchableOpacity>
         <Text
           style={{
-            fontFamily: 'Poppins-ExtraBold',
+            fontFamily: 'Poppins-Bold',
             color: COLORS.txtblack,
-            fontSize: 16,
+            fontSize: 15,
           }}>
           {tr.settings}
         </Text>
-        <TouchableOpacity style={{
-          width:35,
-          height:35,
-          justifyContent:'center',
-          alignItems:'center',
-          borderRadius:10
-        }}>
-         
-        </TouchableOpacity>
-      
+        <TouchableOpacity
+          style={{
+
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 10,
+          }}></TouchableOpacity>
       </View>
       <View
         style={{
           paddingHorizontal: 10,
-          marginTop: 20,
-          flex:1
+          marginTop: 10,
+          flex: 1,
         }}>
-        <ScrollView style={{flex:1}} contentContainerStyle={{
-       
-        }} showsVerticalScrollIndicator={false}>
-          
+        <ScrollView
+          style={{flex: 1}}
+          contentContainerStyle={{}}
+          showsVerticalScrollIndicator={false}>
           <View style={{backgroundColor: COLORS.touchable, ...styles.item}}>
             <Icons.MaterialIcons
               name="language"
               size={20}
               color={COLORS.txtblack}
             />
-            <TouchableOpacity onPress={() => showModalLg(true)} style={{flex: 1, ...styles.subItem}}>
+            <TouchableOpacity
+              onPress={() => showModalLg(true)}
+              style={{flex: 1, ...styles.subItem}}>
               <Text style={{color: COLORS.txtblack, ...styles.title}}>
                 {tr.langue}
               </Text>
               <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
-                {lg === 'en' ? tr.anglais :lg === 'ks' ? tr.kiswahili : tr.francais}
+                {lg === 'en'
+                  ? tr.anglais
+                  : lg === 'ks'
+                  ? tr.kiswahili
+                  : tr.francais}
               </Text>
             </TouchableOpacity>
           </View>
@@ -207,17 +222,14 @@ const Settings = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <Icons.AntDesign
-                name='sound'
-                size={20}
-                color={COLORS.txtblack}
-              />
+              <Icons.AntDesign name="sound" size={20} color={COLORS.txtblack} />
               <View style={styles.subItem}>
                 <Text style={{color: COLORS.txtblack, ...styles.title}}>
                   Sound
                 </Text>
                 <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
-                  Activer ou désactiver le son lors de l'ajout d'un produit au panier
+                  Activer ou désactiver le son lors de l'ajout d'un produit au
+                  panier
                 </Text>
               </View>
             </View>
@@ -255,7 +267,7 @@ const Settings = () => {
                 {tr.devise}
               </Text>
               <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
-               {tr.deviseMsg}
+                {tr.deviseMsg}
               </Text>
             </TouchableOpacity>
           </View>
@@ -265,68 +277,75 @@ const Settings = () => {
               size={20}
               color={COLORS.txtblack}
             />
-            <TouchableOpacity onPress={() => navigation.navigate(ROUTES.LIST_ENTREPRISE)} style={{flex: 1, ...styles.subItem}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ROUTES.LIST_ENTREPRISE)}
+              style={{flex: 1, ...styles.subItem}}>
               <Text style={{color: COLORS.txtblack, ...styles.title}}>
                 {'Mes entreprises'}
               </Text>
               <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
-               Cliquez ici pour voir la liste des entreprises que vous gerez
+                Cliquez ici pour voir la liste des entreprises que vous gerez
               </Text>
             </TouchableOpacity>
           </View>
           <View style={{backgroundColor: COLORS.touchable, ...styles.item}}>
-            <Icons.Feather
-              name="users"
-              size={20}
-              color={COLORS.txtblack}
-            />
-            <TouchableOpacity onPress={() => navigation.navigate(ROUTES.USER_LIST)} style={{flex: 1, ...styles.subItem}}>
+            <Icons.Feather name="users" size={20} color={COLORS.txtblack} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ROUTES.USER_LIST)}
+              style={{flex: 1, ...styles.subItem}}>
               <Text style={{color: COLORS.txtblack, ...styles.title}}>
                 {'Employés'}
               </Text>
               <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
-               Cliquez ici pour voir la liste des employés des entreprises que vous gerez
+                Cliquez ici pour voir la liste des employés des entreprises que
+                vous gerez
               </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => showModal(true)} style={{backgroundColor: COLORS.touchable, ...styles.item}}>
+          <TouchableOpacity
+            onPress={() => showModal(true)}
+            style={{backgroundColor: COLORS.touchable, ...styles.item}}>
             <Icons.FontAwesome
               name="sign-out"
               size={20}
               color={COLORS.txtblack}
             />
             <View style={styles.subItem}>
-              <Text style={{color: COLORS.txtblack, ...styles.title}}>Se déconnecter</Text>
-              <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>Cliquer ici pour supprimer toutes vos information dans cet appareil</Text>
+              <Text style={{color: COLORS.txtblack, ...styles.title}}>
+                Se déconnecter
+              </Text>
+              <Text style={{color: COLORS.txtblack, ...styles.subTitle}}>
+                Cliquer ici pour supprimer toutes vos information dans cet
+                appareil
+              </Text>
             </View>
           </TouchableOpacity>
- 
         </ScrollView>
       </View>
       <Modal animationType="fade" transparent={true} visible={modalLg}>
         <TouchableWithoutFeedback onPress={() => showModalLg(false)}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0, 0.2)',
-            alignItems: 'center',
-          }}>
           <View
             style={{
-              width: width * 0.6,
-              borderRadius: 10,
-              padding:10,
-              backgroundColor: COLORS.touchable,
+              flex: 1,
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0,0,0, 0.2)',
+              alignItems: 'center',
             }}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={langue}
-              keyExtractor={item => item.lg}
-              renderItem={LangueList}
-            />
+            <View
+              style={{
+                width: width * 0.6,
+                borderRadius: 10,
+                padding: 10,
+                backgroundColor: COLORS.touchable,
+              }}>
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={langue}
+                keyExtractor={item => item.lg}
+                renderItem={LangueList}
+              />
+            </View>
           </View>
-        </View>
         </TouchableWithoutFeedback>
       </Modal>
       <DialogBox
@@ -340,9 +359,8 @@ const Settings = () => {
           //navigation.closeDrawer();
           Logout();
           showModal(false);
-          
         }}
-        />
+      />
     </SafeAreaView>
   );
 };
@@ -371,7 +389,7 @@ const styles = StyleSheet.create({
   },
   subItem: {
     marginLeft: 20,
-    width:'60%'
+    width: '60%',
   },
   title: {
     fontFamily: 'Poppins-Medium',
@@ -386,7 +404,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    borderBottomWidth:1,
+    borderBottomWidth: 1,
     paddingVertical: 10,
     marginVertical: 5,
   },

@@ -155,10 +155,8 @@ const ProductList = ({route, navigation}) => {
             backgroundColor: COLORS.background,
           }}>
           <ScrollView
-            style={{
-              flex: 1,
-            }}
-            contentContainerStyle={{}}
+         
+            contentContainerStyle={{flex:1}}
             showsVerticalScrollIndicator={false}>
             {loading ? (
               data.map(item => (
@@ -201,9 +199,7 @@ const ProductList = ({route, navigation}) => {
                     padding: 10,
                     backgroundColor: COLORS.touchable,
                     marginVertical: 5,
-                    borderRadius: 10,
-                    borderLeftWidth: 7,
-                    borderLeftColor: COLORS.primary,
+                    borderRadius: 5,
                     shadowColor: '#000',
                     shadowOffset: {
                       width: 0,

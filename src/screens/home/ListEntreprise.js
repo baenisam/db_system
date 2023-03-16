@@ -27,7 +27,7 @@ import moment from 'moment';
 const {width, height} = Dimensions.get('window');
 const ListEntreprise = props => {
   const COLORS = React.useContext(themeContext);
-  const {en, token,getEntreprise, isLoading, allEntreprise} = React.useContext(GlobalContext);
+  const {en, token,getEntreprise,refresh, isLoading, allEntreprise} = React.useContext(GlobalContext);
   const [date, setDate] = React.useState(new Date());
   const maskRowHeight = Math.round((height - 200) / 20);
   const maskColWidth = (width - 200) / 2;
@@ -73,7 +73,7 @@ const ListEntreprise = props => {
 
   React.useEffect(() => {
     getEntreprise()
-  }, [en]);
+  }, [en,refresh]);
 
   const renderItem = ({item}) => {
     return (
@@ -204,25 +204,25 @@ const ListEntreprise = props => {
           flex: 1,
         }}>
         {isLoading ? (
-          <FlatList
-          style={{flex: 1}}
-          data={data}
-          contentContainerStyle={{paddingHorizontal: 10}}
-          keyExtractor={item => item.id}
-          renderItem={item => (
-            <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
-              <View
-                style={{
-                  width: '100%',
-                  height: 70,
-                  marginVertical: 5,
-                  borderRadius: 5,
-                }}
-              />
-            </SkeletonPlaceholder>
-          )}
-            showsVerticalScrollIndicator={false}
-          />
+        <FlatList
+        style={{flex: 1}}
+        data={data}
+        contentContainerStyle={{paddingHorizontal: 10}}
+        keyExtractor={item => item.id}
+        renderItem={item => (
+          <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
+            <View
+              style={{
+                width: '100%',
+                height: 70,
+                marginVertical: 5,
+                borderRadius: 5,
+              }}
+            />
+          </SkeletonPlaceholder>
+        )}
+        showsVerticalScrollIndicator={false}
+      />
         ) : (
           <FlatList
             ListEmptyComponent={() => (
