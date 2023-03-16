@@ -17,6 +17,7 @@ import * as React from 'react';
 import {RNCamera} from 'react-native-camera';
 import {ROUTES} from '../../constants';
 import {Icons} from '../../constants/Icons';
+import {SelectList} from 'react-native-dropdown-select-list';
 import imgs from '../../constants/imgs';
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
@@ -54,9 +55,20 @@ const Cart = props => {
   const cart = useSelector(state => state.cart);
   const totalPrice = useSelector(cartTotalPriceSelector);
   const COLORS = React.useContext(themeContext);
-  const {displayMessage,forceUpdate, en, token} = React.useContext(GlobalContext);
+  const {displayMessage, forceUpdate, en, token} =
+    React.useContext(GlobalContext);
 
-  console.log(cart)
+  const [selected, setSelected] = React.useState('');
+
+  const data = [
+    {key: '1', value: 'Mobiles', disabled: true},
+    {key: '2', value: 'Appliances'},
+    {key: '3', value: 'Cameras'},
+    {key: '4', value: 'Computers', disabled: true},
+    {key: '5', value: 'Vegetables'},
+    {key: '6', value: 'Diary Products'},
+    {key: '7', value: 'Drinks'},
+  ];
 
   const {navigation} = props;
 
@@ -131,12 +143,11 @@ const Cart = props => {
         }, 50000);
         setLoad(true);
         axios({
-          url:config.BASE_URL + `facture/${
-            en && en.id_entreprise
-          }/create`,
+          url: config.BASE_URL + `facture/${en && en.id_entreprise}/create`,
           method: 'post',
           data: {
             montant: inputs.amount,
+            table:'Table 4',
             devise: 'USD',
             type: 'CASH',
             client: inputs.customer,
@@ -187,7 +198,6 @@ const Cart = props => {
                   showModalPartial(false);
                   setInputs({});
                   dispatch(clear());
-
                 })
                 .catch(error => {
                   console.log(error);
@@ -549,22 +559,18 @@ const Cart = props => {
 
       <BottomSheet
         color={COLORS.background}
-        height={0.4}
+        height={0.6}
         show={modalPartial}
         allowBgDismiss
         onDismiss={() => {
           showModalPartial(false);
           setInputs({amount: totalPrice});
         }}>
-        <ScrollView
-          bounces={false}
-          contentInsetAdjustmentBehavior="always"
-          overScrollMode="always"
-          showsVerticalScrollIndicator={true}
-          style={{}}
-          contentContainerStyle={{
+        <View
+          style={{
+            flex: 1,
             paddingHorizontal: 20,
-            paddingBottom: 200,
+            justifyContent: 'center',
             alignItems: 'center',
           }}>
           <Text
@@ -583,6 +589,7 @@ const Cart = props => {
             }}>
             Entrez le nom du client et le montant payé
           </Text>
+
           <TextInput
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
@@ -602,6 +609,25 @@ const Cart = props => {
             }}
             onChangeText={text => handleOnChange(text, 'customer')}
           />
+      
+      <View style={{width:width, paddingHorizontal:20, marginTop:20}}>
+      <SelectList 
+           onSelect={() => alert(selected)}
+           setSelected={setSelected} 
+       data={data} 
+       boxStyles={{
+        borderRadius:0
+       }}
+       labelStyle={{color:COLORS.txtblack}}
+       searchPlaceholder="Ecrivez quelques choses"
+       dropdownStyles={{color:COLORS.txtblack}}
+       dropdownTextStyles={{color:COLORS.txtblack}}
+       save="value"
+
+       label="Categories"
+      
+    />
+      </View>
           {/*<TextInput
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
@@ -630,7 +656,7 @@ const Cart = props => {
             colorText={COLORS.white}
             containerStyle={{marginTop: 20, borderRadius: 0}}
           />
-        </ScrollView>
+        </View>
       </BottomSheet>
       <Modal animationType="fade" transparent={true} visible={visible}>
         <View

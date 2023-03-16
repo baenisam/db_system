@@ -65,7 +65,7 @@ const Home = () => {
         config.BASE_URL +
         `facture/${en && en.id_entreprise}/load/${moment().format(
           'YYYY-MM-DD',
-        )}/0`,
+        )}/1`,
       method: 'get',
       headers: {
         Authorization: 'Bearer ' + token,
