@@ -41,7 +41,9 @@ const Notifications = ({navigation}) => {
   const total = useSelector(cartTotalSelector);
   const [qty, setQty] = React.useState(1);
   const [price, setPrice] = React.useState(qty * 20);
+  const [search, setSearch] = React.useState("");
   const [products, setProduct] = React.useState([]);
+  const [masterData, setMasterData] = React.useState([])
   const [imag, setImage] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   let AnimatedHeaderValue = new Animated.Value(0);
@@ -64,8 +66,8 @@ const Notifications = ({navigation}) => {
       },
     })
       .then(response => {
-        console.log(response.data.data);
         setProduct(response.data.data);
+        setMasterData(response.data.data);
         setLoading(false);
       })
       .catch(error => {
@@ -177,6 +179,21 @@ const Notifications = ({navigation}) => {
       </TouchableOpacity>
     );
   };
+
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = masterData.filter((item) => {
+        const nom = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return nom.indexOf(textData) > -1 ;
+      });
+      setProduct(newData);
+      setSearch(text);
+    } else {
+      setProduct(masterData);
+      setSearch(text);
+    }
+  };
   return (
     <View
       style={{
@@ -277,10 +294,12 @@ const Notifications = ({navigation}) => {
             colorPlaceholder={'grey'}
             label=""
             iconName="search"
-            placeholder="Rechercher par nom"
+            placeholder="Rechercher un produit"
             keyboardAppearance="dark"
             returnKeyType="next"
             returnKeyLabel="Suivant"
+            value={search}
+            onChangeText={(txt) => searchFilter(txt)}
           />
         </View>
       </View>

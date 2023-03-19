@@ -84,14 +84,7 @@ console.log(item)
       hanldeError('Veuillez renseigner ce champ', 'adresse');
       valide = false;
     }
-    if (!inputs.id) {
-      hanldeError('Veuillez renseigner ce champ', 'id');
-      valide = false;
-    }
-    if (!inputs.rccm) {
-      hanldeError('Veuillez renseigner ce champ', 'rccm');
-      valide = false;
-    }
+
     if (!inputs.description) {
       hanldeError('Veuillez renseigner ce champ', 'description');
       valide = false;

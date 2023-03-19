@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
   TextInput as InputText,
   Keyboard,
   StatusBar,
@@ -15,17 +16,21 @@ import {
 } from 'react-native';
 import * as React from 'react';
 import {RNCamera} from 'react-native-camera';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {ROUTES} from '../../constants';
 import {Icons} from '../../constants/Icons';
+import {SelectList} from 'react-native-dropdown-select-list';
 import imgs from '../../constants/imgs';
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import {Products} from '../../constants/DummyData';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import themeContext from '../../constants/themeContext';
 import DialogBox from '../../components/DialogBox';
 import {GlobalContext} from '../../services/context';
 import NumericInput from 'react-native-numeric-input';
 import {Button} from '../../components/Button';
+import SearchBar from '../../components/SearchBar';
 import TextInput from '../../components/InputText';
 import * as config from '../../services/config';
 import BottomSheet from '../../components/BottomSheet';
@@ -34,14 +39,15 @@ import {
   increment,
   decrement,
   addToCartOnChange,
+  addToCart,
   clear,
   removeItem,
-} from '../../redux/CartReducer';
-import {cartTotalPriceSelector} from '../../redux/Selector';
+} from '../../redux/CartReducerEdit';
+import {cartTotalPriceSelector} from '../../redux/SelectorEdit';
 import {Provider} from 'react-native-paper';
 import {CardStyleInterpolators} from '@react-navigation/stack';
 const {width, height} = Dimensions.get('window');
-const Cart = props => {
+const CartEdit = () => {
   const dispatch = useDispatch();
   const [modal, showModal] = React.useState(false);
   const [modalPartial, showModalPartial] = React.useState(false);
@@ -49,14 +55,75 @@ const Cart = props => {
   const [price, setPrice] = React.useState(qty * 20);
   const [visible, setVisible] = React.useState(false);
   const [show, setShow] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(false);
   const [load, setLoad] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState({});
-  const cart = useSelector(state => state.cart);
+  const cart = useSelector(state => state.cartEdit);
   const totalPrice = useSelector(cartTotalPriceSelector);
   const COLORS = React.useContext(themeContext);
-  const {displayMessage, en, token} = React.useContext(GlobalContext);
+  const [products, setProduct] = React.useState([]);
+  const [search, setSearch] = React.useState("");
+  const [masterData, setMasterData] = React.useState([])
+  const {displayMessage, LogoutSession, forceUpdate, en,refresh, isConnected, token} =
+    React.useContext(GlobalContext);
 
-  const {navigation} = props;
+ 
+  const [selected, setSelected] = React.useState('');
+
+  const data = [
+    {key: '1', value: 'Mobiles', disabled: true},
+    {key: '2', value: 'Appliances'},
+    {key: '3', value: 'Cameras'},
+    {key: '4', value: 'Computers', disabled: true},
+    {key: '5', value: 'Vegetables'},
+    {key: '6', value: 'Diary Products'},
+    {key: '7', value: 'Drinks'},
+  ];
+
+  console.log(cart)
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const {item} = route.params;
+  console.log(item)
+
+  const getProduts = () => {
+    setLoading(true);
+    axios({
+      url: config.BASE_URL + `produit/${en && en.id_entreprise}/load`,
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    })
+      .then(response => {
+        setProduct(response.data.data);
+        setMasterData(response.data.data);
+        //console.log(response.data.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        if (error.response) {
+          // Request made and server responded
+          if (error.response.status === 402) {
+            LogoutSession();
+          }
+          setLoading(false);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+          setLoading(false);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+          setLoading(false);
+        }
+      });
+  };
+
+  React.useEffect(() => {
+    getProduts();
+  }, [en,refresh]);
 
   const AlertItem = () => {
     dispatch(clear());
@@ -83,10 +150,15 @@ const Cart = props => {
     navigation.navigate(ROUTES.QR);
   };
 
+
   const [inputs, setInputs] = React.useState({
-    customer: '',
+    customer:item.client,
     amount: totalPrice,
   });
+
+  const showOpen = () => {
+    openModal()
+  }
   const [errors, setErrors] = React.useState({});
   const validate = () => {
     Keyboard.dismiss();
@@ -129,12 +201,11 @@ const Cart = props => {
         }, 50000);
         setLoad(true);
         axios({
-          url: `https://apis.mlinzitech.com/v1/api/facture/${
-            en && en.id_entreprise
-          }/create`,
-          method: 'post',
+          url: config.BASE_URL + `facture/${en && en.id_entreprise}/update/${item.id}`,
+          method: 'PUT',
           data: {
-            montant: inputs.amount,
+            montant: totalPrice,
+            table: 'Table 4',
             devise: 'USD',
             type: 'CASH',
             client: inputs.customer,
@@ -148,24 +219,20 @@ const Cart = props => {
           .then(response => {
             if (response.data.status === 200) {
               setLoad(false);
-              let data = response.data.data;
               let promises = [];
-
-              cart.map(item => {
+              cart.map(itemm => {
                 promises.push(
                   axios({
-                    url:
-                      config.BASE_URL +
-                      `facture/${en.id_entreprise}/detaille/create`,
-                    method: 'post',
+                    url:config.BASE_URL + `facture/${en.id_entreprise}/detaille/create`,
+                    method: 'POST',
                     headers: {
                       Authorization: 'Bearer ' + token,
                     },
                     data: {
-                      id_facture: data.id_facture,
-                      id_produit: item.id,
-                      qte: item.quantity,
-                      prix: item.total,
+                      id_facture: item.id,
+                      id_produit: itemm.id,
+                      qte: itemm.quantity,
+                      prix: itemm.total,
                     },
                     cancelToken: source.token,
                   }),
@@ -174,16 +241,21 @@ const Cart = props => {
 
               Promise.all(promises)
                 .then(response => {
+                  forceUpdate();
                   clearTimeout(timeout);
                   setLoad(false);
+               
+                  //setInputs({});
+                  //showModalPartial(false);
+                  dispatch(clear());
+                
+                  navigation.goBack();
                   displayMessage(
                     'Congratulations',
-                    'La commande a été envoyé avec succès',
+                    'La facture a été modifiée avec succès',
                     'success',
                   );
-                  showModalPartial(false);
-                  setInputs({});
-                  dispatch(clear());
+                  
                 })
                 .catch(error => {
                   console.log(error);
@@ -232,10 +304,8 @@ const Cart = props => {
     return (
       <View
         style={{
-          flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          marginTop: 100,
         }}>
         <Image
           source={imgs.empty}
@@ -257,6 +327,81 @@ const Cart = props => {
       </View>
     );
   };
+
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = masterData.filter((item) => {
+        const nom = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return nom.indexOf(textData) > -1 ;
+      });
+      setProduct(newData);
+      setSearch(text);
+    } else {
+      setProduct(masterData);
+      setSearch(text);
+    }
+  };
+
+  const renderItemProduct = ({item, index}) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          dispatch(addToCart(item));
+        }}
+        style={{
+          backgroundColor: COLORS.touchable,
+          height: 'auto',
+          marginLeft: 10,
+          borderRadius: 10,
+          width: (width - 20) / 4,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.22,
+          shadowRadius: 2.22,
+
+          elevation: 3,
+        }}>
+        {item.file == null ? (
+          <Image style={styles.card_image1} source={imgs.product} />
+        ) : (
+          <Image
+            style={styles.card_image1}
+            source={{uri: config.IMAGE_URL + JSON.parse(item.file)}}
+          />
+        )}
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: 5,
+          }}>
+          <Text
+            style={{
+              color: COLORS.txtblack,
+              fontFamily: 'Poppins-Light',
+              fontSize: 10,
+            }}>
+            {item.name.length < 10
+              ? `${item.name}`
+              : `${item.name.substring(0, 10)}...`}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Poppins-ExtraBold',
+              fontSize: 8,
+              color: COLORS.txtblack,
+            }}>
+            {item.prix_max} {en.devise}
+          </Text>
+        </View>
+
+      </TouchableOpacity>
+    );
+  };
+
   const CartItem = ({item}) => {
     return (
       <View
@@ -290,11 +435,11 @@ const Cart = props => {
                   : `${item.name.substring(0, 20)}...`}
               </Text>
               <Text style={{color: COLORS.txtblack, ...styles.titleItemSub}}>
-                {item.prix_max}
+                {item.prix_max} {en && en.devise}
               </Text>
             </View>
             <TouchableOpacity onPress={() => dispatch(removeItem(item.id))}>
-              <Icons.FontAwesome name="trash" color={COLORS.shape} size={20} />
+              <Icons.FontAwesome name="trash" color={'red'} size={20} />
             </TouchableOpacity>
           </View>
           <View
@@ -311,7 +456,7 @@ const Cart = props => {
                 style={{
                   color: COLORS.txtblack,
                   fontFamily: 'Poppins-Medium',
-                  fontSize: 10,
+                  fontSize: 8,
                 }}>
                 Quantité
               </Text>
@@ -319,9 +464,9 @@ const Cart = props => {
                 style={{
                   color: COLORS.txtblack,
                   fontFamily: 'Poppins-Medium',
-                  fontSize: 10,
+                  fontSize: 8,
                 }}>
-                Total : $ {item.quantity * item.prix_max}
+                Total : {en && en.devise} {item.quantity * item.prix_max}
               </Text>
             </View>
             <View style={{flex: 1, ...styles.cartItemAmount}}>
@@ -346,6 +491,7 @@ const Cart = props => {
                 <Icons.Entypo name="minus" size={18} color={COLORS.black} />
               </TouchableOpacity>
               <TouchableOpacity
+              style={{paddingHorizontal:10,paddingVertical:2,borderRadius:5, borderWidth:1, borderColor:COLORS.txtblack}}
                 onPress={() => {
                   setSelectedItem(item);
                   setQty(`${item.quantity}`);
@@ -391,22 +537,46 @@ const Cart = props => {
           translucent={true}
           backgroundColor={'transparent'}
         />
-        <View style={{backgroundColor: COLORS.primary, ...styles.header}}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icons.FontAwesome
-              name="arrow-left"
-              size={20}
-              color={COLORS.white}
-            />
-          </TouchableOpacity>
-          <Text style={{color: COLORS.white, ...styles.headerTitle}}>
-            Panier
-          </Text>
+        <View
+          style={{
+            paddingTop:
+              Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 0,
+            backgroundColor: COLORS.shape,
+
+            zIndex: 100,
+            ...styles.header,
+          }}>
           <View
             style={{
               flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              zIndex: 100,
             }}>
-            <View style={{width: 20}} />
+            <TouchableOpacity
+              style={{
+                width: 35,
+                height: 35,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+              }}
+              onPress={() => {
+                navigation.goBack();
+                dispatch(clear());
+              }}>
+              <Icons.Feather name="arrow-left" color={COLORS.white} size={20} />
+            </TouchableOpacity>
+            <View>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontFamily: 'Poppins-Bold',
+                  color: '#fff',
+                }}>
+                Modifier la facture
+              </Text>
+            </View>
             <TouchableOpacity
               onPress={() => {
                 if (cart.length > 0) {
@@ -416,12 +586,128 @@ const Cart = props => {
               <Icons.FontAwesome name="trash" size={20} color={COLORS.white} />
             </TouchableOpacity>
           </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              marginTop: 10,
+              paddingBottom: 10,
+            }}>
+            <SearchBar
+              color={COLORS.txtblack}
+              colorPlaceholder={'grey'}
+              amStyle={{borderRadius: 0}}
+              label=""
+              iconName="search"
+              placeholder="Rechercher un produit"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              value={search}
+              onChangeText={(text) => searchFilter(text)}
+            />
+          </View>
+        </View>
+        <View style={{paddingHorizontal: 20, marginTop: 10}}>
+          <Text
+            style={{
+              fontFamily: 'Poppins-Light',
+              fontSize: 12,
+              color: COLORS.txtblack,
+            }}>
+            Produits
+          </Text>
+        </View>
+        <View style={{height: 160}}>
+          {isLoading ? (
+            <FlatList
+         
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              data={data}
+              keyExtractor={item => item.key}
+              renderItem={({item}) => (
+                <SkeletonPlaceholder
+                  direction="left"
+                  backgroundColor={COLORS.skele}
+                  borderRadius={4}>
+                  <View
+                    style={{
+                      height:150,
+                      marginLeft: 10,
+                      borderRadius: 10,
+                      width: (width - 20) / 4,
+                     
+                    }}/>
+                </SkeletonPlaceholder>
+              )}
+            />
+          ) : (
+            <FlatList
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  width:width,
+                  justifyContent:'center',
+                  alignItems:'center'
+                }}>
+                <Image
+                  source={imgs.empty}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    tintColor: COLORS.primary,
+                    resizeMode: 'contain',
+                  }}
+                />
+
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Light',
+                    fontSize: 10,
+                    color: COLORS.txtblack,
+                  }}>
+                  Aucun produit
+                </Text>
+              </View>
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={() => getProduts()}
+              />
+            }
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                paddingBottom: 10,
+                paddingTop: 10,
+              }}
+              keyExtractor={(item, index) => item.id}
+              data={products}
+              renderItem={renderItemProduct}
+            />
+          )}
+        </View>
+        <View style={{paddingHorizontal: 20, marginTop: 10, paddingBottom:10}}>
+          <Text
+            style={{
+              fontFamily: 'Poppins-Light',
+              fontSize: 12,
+              color: COLORS.txtblack,
+            }}>
+            Dans le panier
+          </Text>
         </View>
         <FlatList
+
           ListEmptyComponent={EmptyComponent}
           data={cart}
           contentContainerStyle={{
             paddingBottom: height * 0.2,
+            flexGrow: 1,
           }}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => <CartItem item={item} />}
@@ -437,7 +723,20 @@ const Cart = props => {
               Total:{' '}
             </Text>
             <Text style={{color: COLORS.txtblack, ...styles.total}}>
-              {totalPrice} $
+              {totalPrice} {en && en.devise}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              width: '100%',
+            }}>
+            <Text style={{color: COLORS.txtblack, ...styles.totall}}>
+              Client:{' '}
+            </Text>
+            <Text style={{color: COLORS.txtblack, ...styles.total}}>
+              {item.client}
             </Text>
           </View>
           <View style={styles.rowBetween}>
@@ -448,39 +747,23 @@ const Cart = props => {
                 alignItems: 'center',
               }}>
               <Button
+              isLoading={load}
                 onPress={() => {
                   cart.length > 0
-                    ? openModal()
+                    ? validate()
                     : displayMessage(
                         'Erreur',
                         'Impossible de continuer, le panier est encore vide',
                         'danger',
                       );
                 }}
-                label="CASH"
-                colorText={COLORS.shape}
-                containerStyle={{
-                  borderWidth: 1,
-                  borderColor: COLORS.shape,
-                  height: 40,
-                  borderRadius: 5,
-                  width: (width - 30) / 2,
-                }}
-              />
-              <View style={{width: 10}} />
-              <Button
-                onPress={() => {
-                  if (cart.length > 0) {
-                    setShow(true);
-                  }
-                }}
-                label="TAP & PAY"
+                label="Enregistrer"
                 color={COLORS.shape}
                 colorText={COLORS.txtWhite}
                 containerStyle={{
                   height: 40,
                   borderRadius: 5,
-                  width: (width - 30) / 2,
+                  width: '100%',
                 }}
               />
             </View>
@@ -545,22 +828,18 @@ const Cart = props => {
 
       <BottomSheet
         color={COLORS.background}
-        height={0.4}
+        height={0.6}
         show={modalPartial}
         allowBgDismiss
         onDismiss={() => {
           showModalPartial(false);
           setInputs({amount: totalPrice});
         }}>
-        <ScrollView
-          bounces={false}
-          contentInsetAdjustmentBehavior="always"
-          overScrollMode="always"
-          showsVerticalScrollIndicator={true}
-          style={{}}
-          contentContainerStyle={{
+        <View
+          style={{
+            flex: 1,
             paddingHorizontal: 20,
-            paddingBottom: 200,
+            justifyContent: 'center',
             alignItems: 'center',
           }}>
           <Text
@@ -579,11 +858,13 @@ const Cart = props => {
             }}>
             Entrez le nom du client et le montant payé
           </Text>
+
           <TextInput
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
             amStyle={{borderRadius: 0}}
             label=""
+            
             iconName="user"
             placeholder="Client"
             keyboardAppearance="dark"
@@ -598,9 +879,27 @@ const Cart = props => {
             }}
             onChangeText={text => handleOnChange(text, 'customer')}
           />
-          {/* <TextInput
+
+          <View style={{width: width, paddingHorizontal: 20, marginTop: 20}}>
+            <SelectList
+              onSelect={() => alert(selected)}
+              setSelected={setSelected}
+              data={data}
+              boxStyles={{
+                borderRadius: 0,
+              }}
+              labelStyle={{color: COLORS.txtblack}}
+              searchPlaceholder="Ecrivez quelques choses"
+              dropdownStyles={{color: COLORS.txtblack}}
+              dropdownTextStyles={{color: COLORS.txtblack}}
+              save="value"
+              label="Categories"
+            />
+          </View>
+          {/*<TextInput
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
+            editable={false}
             amStyle={{borderRadius: 0}}
             label=""
             iconName="credit-card"
@@ -620,12 +919,12 @@ const Cart = props => {
           <Button
             isLoading={load}
             onPress={validate}
-            label={`Payer ${inputs.amount} $`}
+            label={`Payer ${inputs.amount} ${en && en.devise}`}
             color={COLORS.primary}
             colorText={COLORS.white}
             containerStyle={{marginTop: 20, borderRadius: 0}}
           />
-        </ScrollView>
+        </View>
       </BottomSheet>
       <Modal animationType="fade" transparent={true} visible={visible}>
         <View
@@ -736,17 +1035,12 @@ const Cart = props => {
   );
 };
 
-export default Cart;
+export default CartEdit;
 
 const styles = StyleSheet.create({
   header: {
-    height: 90,
-    flexDirection: 'row',
-    width: width,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    padding: 10,
+    width: '100%',
   },
   headerTitle: {
     fontFamily: 'Poppins-Bold',
@@ -773,9 +1067,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width: width / 3,
+    width: width / 4,
     height: '100%',
     borderRadius: 10,
+    resizeMode: 'contain',
   },
   rowBetween: {
     flexDirection: 'row',
@@ -784,11 +1079,12 @@ const styles = StyleSheet.create({
   },
   total: {
     fontFamily: 'Poppins-ExtraBold',
-    fontSize: 14,
+    fontSize: 12,
+    marginLeft: 10,
   },
   totall: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 14,
+    fontSize: 10,
   },
   itemContent: {
     padding: 10,
@@ -797,12 +1093,12 @@ const styles = StyleSheet.create({
   },
   titleItem: {
     fontFamily: 'Poppins-Light',
-    fontSize: 14,
+    fontSize: 10,
   },
   titleItemSub: {
     fontFamily: 'Poppins-Light',
     color: 'grey',
-    fontSize: 14,
+    fontSize: 8,
   },
   item: {
     flexDirection: 'row',
@@ -847,6 +1143,17 @@ const styles = StyleSheet.create({
     width: '70%',
     padding: 10,
   },
+  card_template1: {
+    width: (width - 20) / 4,
+    height: 100,
+    boxShadow: '10px 10px 17px -12px rgba(0,0,0,0.75)',
+  },
+  card_image1: {
+    width: '100%',
+    height: 80,
+    borderRadius: 5,
+    resizeMode: 'contain',
+  },
   storeItemTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -874,7 +1181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cartItemAmountText: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Poppins-ExtraBold',
   },
   cartItemRemove: {

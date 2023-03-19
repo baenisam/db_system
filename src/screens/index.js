@@ -2,6 +2,7 @@ export {default as SettingsDetail} from './home/SettingsDetail';
 export {default as Settings} from './home/Settings';
 export {default as Home} from './home/Home';
 export {default as Cart} from './home/Cart';
+export {default as CartEdit} from './home/CartEdit';
 export {default as QrScan} from './home/QrScan';
 export {default as Invoices} from './home/Invoices';
 export {default as Categories} from './home/Categories';

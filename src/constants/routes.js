@@ -32,6 +32,7 @@ export default {
   EDIT_ENTREPRISE: 'Edit Entreprise',
 
   CART: 'Cart',
+  CART_EDIT: 'Cart Edit',
   CART_NAVIGATOR: 'Cart Navigator',
   WALLET_DRAWER: 'Wallet Drawer',
   STOCK_DETAIL: 'Stock detail',

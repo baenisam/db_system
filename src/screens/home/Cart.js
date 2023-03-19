@@ -2,6 +2,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ActivityIndicator,
   Image,
   TouchableOpacity,
   FlatList,
@@ -20,7 +21,7 @@ import {Icons} from '../../constants/Icons';
 import {SelectList} from 'react-native-dropdown-select-list';
 import imgs from '../../constants/imgs';
 import axios from 'axios';
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo, {refresh} from '@react-native-community/netinfo';
 import {Products} from '../../constants/DummyData';
 import themeContext from '../../constants/themeContext';
 import DialogBox from '../../components/DialogBox';
@@ -48,14 +49,16 @@ const Cart = props => {
   const [modalPartial, showModalPartial] = React.useState(false);
   const [qty, setQty] = React.useState('');
   const [price, setPrice] = React.useState(qty * 20);
+  const [isLoading, setLoading] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
+  const [tables, setTables] = React.useState([]);
   const [show, setShow] = React.useState(false);
   const [load, setLoad] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState({});
   const cart = useSelector(state => state.cart);
   const totalPrice = useSelector(cartTotalPriceSelector);
   const COLORS = React.useContext(themeContext);
-  const {displayMessage, forceUpdate, en, token} =
+  const {displayMessage, refresh, forceUpdate, LogoutSession, en, token} =
     React.useContext(GlobalContext);
 
   const [selected, setSelected] = React.useState('');
@@ -100,6 +103,7 @@ const Cart = props => {
   const [inputs, setInputs] = React.useState({
     customer: '',
     amount: totalPrice,
+    tab: '',
   });
   const [errors, setErrors] = React.useState({});
   const validate = () => {
@@ -115,8 +119,16 @@ const Cart = props => {
       valide = false;
     }
 
+    if (!inputs.tab) {
+      hanldeError('Veuillez séléctionner une table', 'tab');
+      valide = false;
+    }
+
+
     if (valide) {
       createOrder(inputs);
+
+      //alert(JSON.stringify(inputs))
     }
   };
 
@@ -131,7 +143,48 @@ const Cart = props => {
     setInputs({amount: totalPrice});
     showModalPartial(true);
   };
+  //load tables
+  const getProduts = () => {
+    setLoading(true);
+    axios({
+      url: config.BASE_URL + `restau-table/${en && en.id_entreprise}/load`,
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    })
+      .then(response => {
+        const newdata = response.data.data.map(item => {
+          return {
+            key: item.id,
+            value: item.name,
+          };
+        });
+        setTables(newdata);
+        setLoading(false);
+      })
+      .catch(error => {
+        if (error.response) {
+          // Request made and server responded
+          if (error.response.status === 402) {
+            LogoutSession();
+          }
+          setLoading(false);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+          setLoading(false);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+          setLoading(false);
+        }
+      });
+  };
 
+  React.useEffect(() => {
+    getProduts();
+  }, [en, refresh]);
   //create order
 
   const createOrder = inputs => {
@@ -147,7 +200,7 @@ const Cart = props => {
           method: 'post',
           data: {
             montant: inputs.amount,
-            table:'Table 4',
+            table: inputs.tab,
             devise: 'USD',
             type: 'CASH',
             client: inputs.customer,
@@ -190,14 +243,16 @@ const Cart = props => {
                   forceUpdate();
                   clearTimeout(timeout);
                   setLoad(false);
+               
+                  setInputs({});
+                  showModalPartial(false);
+                  dispatch(clear());
                   displayMessage(
                     'Congratulations',
-                    'La commande a été envoyé avec succès',
+                    'La facture a été modifiée avec succès',
                     'success',
                   );
-                  showModalPartial(false);
-                  setInputs({});
-                  dispatch(clear());
+                  navigation.goBack()
                 })
                 .catch(error => {
                   console.log(error);
@@ -308,7 +363,7 @@ const Cart = props => {
               </Text>
             </View>
             <TouchableOpacity onPress={() => dispatch(removeItem(item.id))}>
-              <Icons.FontAwesome name="trash" color={COLORS.shape} size={20} />
+              <Icons.FontAwesome name="trash" color={'red'} size={20} />
             </TouchableOpacity>
           </View>
           <View
@@ -357,7 +412,7 @@ const Cart = props => {
                     dispatch(decrement(item.id));
                   }
                 }}>
-                <Icons.Entypo name="minus" size={18} color={COLORS.black} />
+                <Icons.Entypo name="minus" size={18} color={COLORS.txtblack} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -566,6 +621,7 @@ const Cart = props => {
           showModalPartial(false);
           setInputs({amount: totalPrice});
         }}>
+          <ScrollView style={{flex:1}} contentContainerStyle={{flexGrow:1}}>
         <View
           style={{
             flex: 1,
@@ -609,25 +665,36 @@ const Cart = props => {
             }}
             onChangeText={text => handleOnChange(text, 'customer')}
           />
-      
-      <View style={{width:width, paddingHorizontal:20, marginTop:20}}>
-      <SelectList 
-           onSelect={() => alert(selected)}
-           setSelected={setSelected} 
-       data={data} 
-       boxStyles={{
-        borderRadius:0
-       }}
-       labelStyle={{color:COLORS.txtblack}}
-       searchPlaceholder="Ecrivez quelques choses"
-       dropdownStyles={{color:COLORS.txtblack}}
-       dropdownTextStyles={{color:COLORS.txtblack}}
-       save="value"
 
-       label="Categories"
-      
-    />
-      </View>
+          <View style={{width: width, paddingHorizontal: 20, marginTop: 20}}>
+            <SelectList
+              setSelected={(value) => handleOnChange(value, 'tab')}
+              onSelect={() => {
+                hanldeError(null, 'tab');
+              }}
+              searchicon={isLoading ? (
+                <ActivityIndicator style={{marginRight:10, marginLeft:-5}} size={15} color={COLORS.txtblack}/>
+              ) : (
+                <Icons.Entypo name="list" style={{marginRight:10, marginLeft:-5}} size={20} color={COLORS.txtblack}/> 
+              )}
+              
+              label="Séléctionner une table"
+              data={tables}
+              boxStyles={{
+                borderRadius: 0,
+                borderColor:errors.tab ? 'red' : 'transparent',
+                backgroundColor:COLORS.inputBg
+              }}
+              search={(text) => handleOnChange(text, 'tab')}
+              labelStyle={{color: COLORS.txtblack}}
+              
+              searchPlaceholder="Ecrivez le nom d'une table"
+              dropdownStyles={{color: COLORS.txtblack, width:'100%'}}
+              dropdownTextStyles={{color: COLORS.txtblack}}
+              save="value"
+            
+            />
+          </View>
           {/*<TextInput
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
@@ -657,6 +724,7 @@ const Cart = props => {
             containerStyle={{marginTop: 20, borderRadius: 0}}
           />
         </View>
+        </ScrollView>
       </BottomSheet>
       <Modal animationType="fade" transparent={true} visible={visible}>
         <View

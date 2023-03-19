@@ -42,10 +42,9 @@ const AddEntreprise = props => {
   } = React.useContext(GlobalContext);
   const [modal, showModal] = React.useState(false);
 
-
   React.useEffect(() => {
-    getCategory()
-  }, [categories, en])
+    getCategory();
+  }, [categories, en]);
   const [inputs, setInputs] = React.useState({
     name: '',
     description: '',
@@ -152,16 +151,20 @@ const AddEntreprise = props => {
         backgroundColor={'transparent'}
       />
 
-
-<View
+      <View
         style={{
           paddingHorizontal: 10,
-          paddingBottom:20,
+          paddingBottom: 20,
           flexDirection: 'row',
           alignItems: 'center',
           paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent:'center'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icons.FontAwesome
               name="arrow-left"
@@ -170,8 +173,9 @@ const AddEntreprise = props => {
             />
           </TouchableOpacity>
         </View>
-          <Text style={{marginLeft:20, ...styles.desc}}>Créer une entreprise</Text>
-
+        <Text style={{marginLeft: 20, ...styles.desc}}>
+          Créer une entreprise
+        </Text>
       </View>
       <View
         style={{
@@ -187,195 +191,198 @@ const AddEntreprise = props => {
             ...StyleSheet.absoluteFill,
           }}
         />
-        <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={10}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{paddingHorizontal: 20, paddingBottom:10}}>
-          <TextInputA
-            color={COLORS.txtblack}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            amStyle={{marginTop: 20}}
-            placeholder="Nom de l'entreprise"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.name}
-            value={inputs.name}
-            touched={errors.name}
-            onFocus={() => {
-              hanldeError(null, 'name');
+        <KeyboardAvoidingView
+          style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}
+          behavior="padding"
+          enabled
+          keyboardVerticalOffset={10}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{
+              flex: 1,
             }}
-            onChangeText={text => handleOnChange(text, 'name')}
-          />
-          <InputSelect
-            color={COLORS.txtblack}
-            icon="user"
-            autoCapitalize="none"
-            placeholder="Catégorie"
-            keyboardAppearance="dark"
-            amStyle={{
-              borderRadius: 0,
-              backgroundColor: COLORS.inputBg,
-              height: 50,
-              marginTop: 20,
-            }}
-            onFocus={() => {
-              hanldeError(null, 'category');
-            }}
-            error={errors.category}
-            value={inputs.category}
-            onValueChange={text => {
-              handleOnChange(text, 'category');
-              hanldeError(null, 'category');
-            }}
-            items={categories}
-          />
-          <TextArea
-            color={COLORS.txtblack}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="Description de l'entreprise"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.description}
-            value={inputs.description}
-            touched={errors.description}
-            onFocus={() => {
-              hanldeError(null, 'description');
-            }}
-            onChangeText={text => handleOnChange(text, 'description')}
-          />
+            contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 10}}>
+            <TextInputA
+              color={COLORS.txtblack}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              amStyle={{marginTop: 20}}
+              placeholder="Nom de l'entreprise"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.name}
+              value={inputs.name}
+              touched={errors.name}
+              onFocus={() => {
+                hanldeError(null, 'name');
+              }}
+              onChangeText={text => handleOnChange(text, 'name')}
+            />
+            <InputSelect
+              color={COLORS.txtblack}
+              icon="user"
+              autoCapitalize="none"
+              placeholder="Catégorie"
+              keyboardAppearance="dark"
+              amStyle={{
+                borderRadius: 0,
+                backgroundColor: COLORS.inputBg,
+                height: 50,
+                marginTop: 20,
+              }}
+              onFocus={() => {
+                hanldeError(null, 'category');
+              }}
+              error={errors.category}
+              value={inputs.category}
+              onValueChange={text => {
+                handleOnChange(text, 'category');
+                hanldeError(null, 'category');
+              }}
+              items={categories}
+            />
+            <TextArea
+              color={COLORS.txtblack}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="Description de l'entreprise"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.description}
+              value={inputs.description}
+              touched={errors.description}
+              onFocus={() => {
+                hanldeError(null, 'description');
+              }}
+              onChangeText={text => handleOnChange(text, 'description')}
+            />
 
-          <TextInputA
-            color={COLORS.txtblack}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="Phone de l'entreprise"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.phone}
-            amStyle={{marginTop: 20}}
-            value={inputs.phone}
-            touched={errors.phone}
-            onFocus={() => {
-              hanldeError(null, 'phone');
-            }}
-            onChangeText={text => handleOnChange(text, 'phone')}
-          />
-          <TextInputA
-                amStyle={{marginTop: 20}}
-            color={COLORS.txtblack}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="Email de l'entreprise"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.email}
-            value={inputs.email}
-            touched={errors.email}
-            onFocus={() => {
-              hanldeError(null, 'email');
-            }}
-            onChangeText={text => handleOnChange(text, 'email')}
-          />
-          <TextInputA
-            color={COLORS.txtblack}
-            amStyle={{marginTop: 20}}
-
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="Adresse de l'entreprise"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.adresse}
-            value={inputs.adresse}
-            touched={errors.adresse}
-            onFocus={() => {
-              hanldeError(null, 'adresse');
-            }}
-            onChangeText={text => handleOnChange(text, 'adresse')}
-          />
-          <TextInputA
-            color={COLORS.txtblack}
-            amStyle={{marginTop: 20}}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="IDNAT"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.id}
-            value={inputs.id}
-            touched={errors.id}
-            onFocus={() => {
-              hanldeError(null, 'id');
-            }}
-            onChangeText={text => handleOnChange(text, 'id')}
-          />
-          <TextInputA
-            color={COLORS.txtblack}
-            amStyle={{marginTop: 20}}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="RCCM"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.rccm}
-            value={inputs.rccm}
-            touched={errors.rccm}
-            onFocus={() => {
-              hanldeError(null, 'rccm');
-            }}
-            onChangeText={text => handleOnChange(text, 'rccm')}
-          />
-          <TextInputA
-            color={COLORS.txtblack}
-            amStyle={{marginTop: 20}}
-            colorPlaceholder={'grey'}
-            label=""
-            iconName="user"
-            placeholder="Message sender name"
-            keyboardAppearance="dark"
-            returnKeyType="next"
-            returnKeyLabel="Suivant"
-            error={errors.sender}
-            value={inputs.sender}
-            touched={errors.sender}
-            onFocus={() => {
-              hanldeError(null, 'sender');
-            }}
-            onChangeText={text => handleOnChange(text, 'sender')}
-          />
-          <Button
-            isLoading={isLoading}
-            onPress={validate}
-            label={'Enregistrer'}
-            color={COLORS.shape}
-            colorText={COLORS.white}
-            containerStyle={{
-              marginTop: 40,
-              height: 55,
-              paddingVertical: 10,
-              borderRadius: 10,
-            }}
-          />
-        </ScrollView>
+            <TextInputA
+              color={COLORS.txtblack}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="Phone de l'entreprise"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.phone}
+              amStyle={{marginTop: 20}}
+              value={inputs.phone}
+              touched={errors.phone}
+              onFocus={() => {
+                hanldeError(null, 'phone');
+              }}
+              onChangeText={text => handleOnChange(text, 'phone')}
+            />
+            <TextInputA
+              amStyle={{marginTop: 20}}
+              color={COLORS.txtblack}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="Email de l'entreprise"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.email}
+              value={inputs.email}
+              touched={errors.email}
+              onFocus={() => {
+                hanldeError(null, 'email');
+              }}
+              onChangeText={text => handleOnChange(text, 'email')}
+            />
+            <TextInputA
+              color={COLORS.txtblack}
+              amStyle={{marginTop: 20}}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="Adresse de l'entreprise"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.adresse}
+              value={inputs.adresse}
+              touched={errors.adresse}
+              onFocus={() => {
+                hanldeError(null, 'adresse');
+              }}
+              onChangeText={text => handleOnChange(text, 'adresse')}
+            />
+            <TextInputA
+              color={COLORS.txtblack}
+              amStyle={{marginTop: 20}}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="IDNAT"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.id}
+              value={inputs.id}
+              touched={errors.id}
+              onFocus={() => {
+                hanldeError(null, 'id');
+              }}
+              onChangeText={text => handleOnChange(text, 'id')}
+            />
+            <TextInputA
+              color={COLORS.txtblack}
+              amStyle={{marginTop: 20}}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="RCCM"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.rccm}
+              value={inputs.rccm}
+              touched={errors.rccm}
+              onFocus={() => {
+                hanldeError(null, 'rccm');
+              }}
+              onChangeText={text => handleOnChange(text, 'rccm')}
+            />
+            <TextInputA
+              color={COLORS.txtblack}
+              amStyle={{marginTop: 20}}
+              colorPlaceholder={'grey'}
+              label=""
+              iconName="user"
+              placeholder="Message sender name"
+              keyboardAppearance="dark"
+              returnKeyType="next"
+              returnKeyLabel="Suivant"
+              error={errors.sender}
+              value={inputs.sender}
+              touched={errors.sender}
+              onFocus={() => {
+                hanldeError(null, 'sender');
+              }}
+              onChangeText={text => handleOnChange(text, 'sender')}
+            />
+            <Button
+              isLoading={isLoading}
+              onPress={validate}
+              label={'Enregistrer'}
+              color={COLORS.shape}
+              colorText={COLORS.white}
+              containerStyle={{
+                marginTop: 40,
+                height: 55,
+                paddingVertical: 10,
+                borderRadius: 10,
+              }}
+            />
+          </ScrollView>
         </KeyboardAvoidingView>
       </View>
     </View>

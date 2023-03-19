@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Modal,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {Icons} from '../../constants/Icons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -27,7 +28,7 @@ import moment from 'moment';
 const {width, height} = Dimensions.get('window');
 const Invoices = props => {
   const COLORS = React.useContext(themeContext);
-  const {en, token} = React.useContext(GlobalContext);
+  const {en, refresh, token} = React.useContext(GlobalContext);
   const [date, setDate] = React.useState(new Date());
   const maskRowHeight = Math.round((height - 200) / 20);
   const maskColWidth = (width - 200) / 2;
@@ -35,6 +36,9 @@ const Invoices = props => {
   const [modalQ, showModalQ] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [invoices, setInvoices] = React.useState([]);
+  const [search, setSearch] = React.useState('');
+  const [masterData, setMasterData] = React.useState([]);
+  const [total, setTotal] = React.useState(null);
   const [scanned, setScanned] = React.useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
 
@@ -82,8 +86,9 @@ const Invoices = props => {
       .then(response => {
         //console.log(response);
         setInvoices(response.data.data.liste);
+        setMasterData(response.data.data.liste);
         setLoading(false);
-        console.log(invoices);
+        setTotal(response.data.data.total);
       })
       .catch(err => {
         console.log(err);
@@ -93,8 +98,22 @@ const Invoices = props => {
 
   React.useEffect(() => {
     getProduts(moment(date).format('YYYY-MM-DD'));
-  }, [en]);
+  }, [en, refresh]);
 
+  const searchFilter = text => {
+    if (text) {
+      const newData = masterData.filter(item => {
+        const nom = item.client ? item.client.toUpperCase() : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return nom.indexOf(textData) > -1;
+      });
+      setInvoices(newData);
+      setSearch(text);
+    } else {
+      setInvoices(masterData);
+      setSearch(text);
+    }
+  };
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
@@ -251,7 +270,11 @@ const Invoices = props => {
               alignItems: 'center',
               backgroundColor: COLORS.white,
             }}>
-            <Icons.FontAwesome name="calendar" color={COLORS.primary} size={15} />
+            <Icons.FontAwesome
+              name="calendar"
+              color={COLORS.primary}
+              size={15}
+            />
           </TouchableOpacity>
         </View>
 
@@ -263,11 +286,13 @@ const Invoices = props => {
             marginTop: 20,
           }}>
           <SearchBar
+            value={search}
+            onChangeText={txt => searchFilter(txt)}
             color={COLORS.txtblack}
             colorPlaceholder={'grey'}
             label=""
             iconName="search"
-            placeholder="Rechercher par nom"
+            placeholder="Rechercher par client"
             keyboardAppearance="dark"
             returnKeyType="next"
             returnKeyLabel="Suivant"
@@ -289,7 +314,10 @@ const Invoices = props => {
             contentContainerStyle={{paddingHorizontal: 10}}
             keyExtractor={item => item.id}
             renderItem={item => (
-              <SkeletonPlaceholder direction="left" backgroundColor={COLORS.skele} borderRadius={4}>
+              <SkeletonPlaceholder
+                direction="left"
+                backgroundColor={COLORS.skele}
+                borderRadius={4}>
                 <View
                   style={{
                     width: '100%',
@@ -303,64 +331,121 @@ const Invoices = props => {
             showsVerticalScrollIndicator={false}
           />
         ) : (
-          <FlatList
-            ListEmptyComponent={() => (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  marginTop: (height - 100) / 5,
-                  height: height,
-                  paddingHorizontal: 20,
-                }}>
-                <Image
-                  source={imgs.empty}
+          <>
+            <FlatList
+              ListEmptyComponent={() => (
+                <View
                   style={{
-                    width: 300,
-                    height: 300,
-                    tintColor: COLORS.primary,
-                    resizeMode: 'contain',
-                  }}
-                />
-
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Light',
-                    fontSize: 10,
-                    color: COLORS.txtblack,
+                    flex: 1,
+                    alignItems: 'center',
+                    marginTop: (height - 100) / 5,
+                    height: height,
+                    paddingHorizontal: 20,
                   }}>
-                  Aucune facture
-                </Text>
-              </View>
-            )}
-            refreshControl={<RefreshControl onRefresh={() => getProduts(moment(date).format('YYYY-MM-DD'))} />}
-            style={{flex: 1}}
-            data={invoices}
-            keyExtractor={item => item.id}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-          />
+                  <Image
+                    source={imgs.empty}
+                    style={{
+                      width: 300,
+                      height: 300,
+                      tintColor: COLORS.primary,
+                      resizeMode: 'contain',
+                    }}
+                  />
+
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Light',
+                      fontSize: 10,
+                      color: COLORS.txtblack,
+                    }}>
+                    Aucune facture
+                  </Text>
+                </View>
+              )}
+              refreshControl={
+                <RefreshControl
+                  onRefresh={() =>
+                    getProduts(moment(date).format('YYYY-MM-DD'))
+                  }
+                />
+              }
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingBottom: 100,
+              }}
+              style={{flex: 1}}
+              data={invoices}
+              keyExtractor={item => item.id}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+            />
+          </>
         )}
+        <View
+          style={{
+            position: 'absolute',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bottom: 0,
+            left: 0,
+            eight: 0,
+            width: width,
+            flexDirection: 'row',
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 10,
+              borderTopEndRadius: 10,
+              borderTopStartRadius: 10,
+              height: 50,
+              alignItems: 'center',
+              paddingVertical: 5,
+              width: '100%',
+              backgroundColor: COLORS.primary,
+            }}>
+            <Text
+              style={{
+                fontFamily: 'Poppins-Light',
+                color: COLORS.white,
+                fontSize: 16,
+                marginRight: 10,
+              }}>
+              Total:
+            </Text>
+            {loading ? (
+              <ActivityIndicator size={15} color={COLORS.white} />
+            ) : (
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Bold',
+                  color: COLORS.white,
+                  fontSize: 16,
+                }}>
+                {total} {en.devise}
+              </Text>
+            )}
+          </View>
+        </View>
       </View>
       <DatePicker
-            modal
-            mode='date'
-            confirmText='Valider'
-            cancelText='Annuler'
-            title="Séléctionner une date"
-            locale='fr'
-            open={isDatePickerVisible}
-            date={date}
-            onConfirm={date => {
-              setDatePickerVisibility(false);
-              setDate(date);
-              handleConfirm(date)
-            }}
-            onCancel={() => {
-              setDatePickerVisibility(false);
-            }}
-          />
-
+        modal
+        mode="date"
+        confirmText="Valider"
+        cancelText="Annuler"
+        title="Séléctionner une date"
+        locale="fr"
+        open={isDatePickerVisible}
+        date={date}
+        onConfirm={date => {
+          setDatePickerVisibility(false);
+          setDate(date);
+          handleConfirm(date);
+        }}
+        onCancel={() => {
+          setDatePickerVisibility(false);
+        }}
+      />
     </SafeAreaView>
   );
 };

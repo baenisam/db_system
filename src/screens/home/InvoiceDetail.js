@@ -18,7 +18,7 @@ import SearchBar from '../../components/SearchBar';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import axios from 'axios';
 import themeContext from '../../constants/themeContext';
-import {addToCartToEdit} from '../../redux/CartReducer';
+import { addToCartToEdit } from '../../redux/CartReducerEdit';
 import {useDispatch, useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
@@ -30,15 +30,16 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 const {width, height} = Dimensions.get('window');
 const InvoiceDetail = () => {
   const COLORS = React.useContext(themeContext);
-  const {en, token} = React.useContext(GlobalContext);
+  const {en, token,refresh} = React.useContext(GlobalContext);
   const navigation = useNavigation();
   const [items, setItems] = React.useState([]);
+  const [invoices, setInvoices] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
   const route = useRoute();
   const {item} = route.params;
 
-  const getProduts = () => {
+  const getProduts = async () => {
     setLoading(true);
     axios({
       url: config.BASE_URL + `facture/${en && en.id_entreprise}/by/${item.id}`,
@@ -50,7 +51,7 @@ const InvoiceDetail = () => {
       .then(response => {
         //console.log(response);
         setItems(response.data.data.detaille);
-        //console.log(response.data.data.detaille);
+        setInvoices(response.data.data.facture)
         //console.log(response.data.data.detaille);
         
         setLoading(false);
@@ -63,7 +64,7 @@ const InvoiceDetail = () => {
 
   React.useEffect(() => {
     getProduts();
-  }, []);
+  }, [refresh, en]);
 
   return (
     <View style={{backgroundColor: COLORS.background, ...styles.layout}}>
@@ -95,7 +96,9 @@ const InvoiceDetail = () => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => {
+              navigation.goBack()
+            }}>
               <Icons.MaterialCommunityIcons
                 name="arrow-left"
                 size={25}
@@ -115,7 +118,9 @@ const InvoiceDetail = () => {
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity onPress={()=> {
               dispatch(addToCartToEdit(items));
-              navigation.navigate(ROUTES.CART)
+              navigation.navigate(ROUTES.CART_EDIT, {
+                item:item
+              })
             }}>
               <Icons.MaterialIcons name="edit" size={25} color={COLORS.white} />
             </TouchableOpacity>
@@ -220,7 +225,7 @@ const InvoiceDetail = () => {
                   color: COLORS.white,
                   marginBottom: 10,
                 }}>
-                {item.montant} {en && en.devise}
+                {invoices.montant} {en && en.devise}
               </Text>
             </View>
             <View
@@ -248,7 +253,7 @@ const InvoiceDetail = () => {
                   fontSize: 16,
                   color: '#f2f2f2',
                 }}>
-                {moment(item.createdAt).format('DD-MM-YYYY')}
+                {moment(invoices.createdAt).format('DD-MM-YYYY')}
               </Text>
             </View>
           </View>
@@ -318,7 +323,7 @@ const InvoiceDetail = () => {
                     fontSize: 14,
                     color: COLORS.txtblack,
                   }}>
-                  {item.client}
+                  {invoices.client}
                 </Text>
               </View>
               <View
@@ -342,7 +347,7 @@ const InvoiceDetail = () => {
                     fontSize: 14,
                     color: COLORS.txtblack,
                   }}>
-                  {item.client_phone == null ? '#' : item.client_phone}
+                  {invoices.client_phone == null ? '#' : invoices.client_phone}
                 </Text>
               </View>
             </View>
@@ -445,7 +450,7 @@ const InvoiceDetail = () => {
                     color: COLORS.txtblack,
                     fontSize: 16,
                   }}>
-                  {item.montant} {en && en.devise}
+                  {invoices.montant} {en && en.devise}
                 </Text>
               </View>
             </View>

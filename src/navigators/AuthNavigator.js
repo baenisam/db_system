@@ -14,6 +14,7 @@ import {
   SetLangue,
   OnBoarding,
   QrScan,
+  CartEdit,
   AddEntreprise,
   StockDetail,
   EditEntreprise,
@@ -199,25 +200,31 @@ function AuthNavigator() {
                 name={ROUTES.LIST_ENTREPRISE}
                 component={ListEntreprise}
               />
-                <Stack.Screen
+              <Stack.Screen
                 options={{...MyTransition}}
                 name={ROUTES.ADD_USER}
                 component={AddUser}
               />
-                <Stack.Screen
+              <Stack.Screen
                 options={{...MyTransition}}
                 name={ROUTES.USER_LIST}
                 component={ListUser}
               />
-                  <Stack.Screen
+              <Stack.Screen
                 options={{...AutherTransition}}
                 name={ROUTES.EDIT_ENTREPRISE}
                 component={EditEntreprise}
               />
-                   <Stack.Screen
+              <Stack.Screen
                 options={{...AutherTransition}}
                 name={ROUTES.STOCK_DETAIL}
                 component={StockDetail}
+              />
+
+              <Stack.Screen
+                options={{...AutherTransition}}
+                name={ROUTES.CART_EDIT}
+                component={CartEdit}
               />
             </>
           )}
